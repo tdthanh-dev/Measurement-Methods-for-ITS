@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mô phỏng giao thông</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .card {
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            font-weight: bold;
+        }
+
+        .card-img-top {
+            height: 160px;
+            object-fit: cover;
+            background-color: #dee2e6;
+        }
+
+        .icon-container {
+            font-size: 4rem;
+            color: #20c997;
+            text-align: center;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container py-5">
+        <h1 class="text-center mb-2">Mô phỏng kỹ thuật giao thông</h1>
+        <h4 class="text-center text-muted mb-5">Các phương pháp đo lường và thu thập dữ liệu giao thông</h4>
+
+        <div class="row">
+            <!-- Mô phỏng vòng từ đơn -->
+            <div class="col-md-6 col-lg-3">
+                <div class="card shadow h-100">
+                    <div class="card-header bg-primary text-white">
+                        Vòng từ đơn (Single Loop)
+                    </div>
+                    <div class="icon-container">
+                        <i class="fas fa-square"></i>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Mô phỏng cảm biến vòng từ đơn đặt trên mặt đường, đo lường lưu lượng và
+                            thời gian chiếm dụng.</p>
+                    </div>
+                    <div class="card-footer bg-white border-0 text-center">
+                        <a href="single_loop_bootstrap.html" class="btn btn-outline-primary">Xem mô phỏng</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mô phỏng vòng từ kép -->
+            <div class="col-md-6 col-lg-3">
+                <div class="card shadow h-100">
+                    <div class="card-header bg-success text-white">
+                        Vòng từ kép (Double Loop)
+                    </div>
+                    <div class="icon-container">
+                        <i class="fas fa-square-full"></i><i class="fas fa-square ml-2"></i>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Mô phỏng cảm biến vòng từ kép, sử dụng hai vòng từ liên tiếp để đo lường
+                            lưu lượng và tốc độ phương tiện.</p>
+                    </div>
+                    <div class="card-footer bg-white border-0 text-center">
+                        <a href="double_loop_bootstrap.html" class="btn btn-outline-success">Xem mô phỏng</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mô phỏng xe thăm dò di động -->
+            <div class="col-md-6 col-lg-3">
+                <div class="card shadow h-100">
+                    <div class="card-header bg-info text-white">
+                        Xe thăm dò di động (Moving Observer)
+                    </div>
+                    <div class="icon-container">
+                        <i class="fas fa-car"></i>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Mô phỏng phương pháp xe thăm dò di động trong dòng xe, đo lường các thông
+                            số giao thông khi di chuyển.</p>
+                    </div>
+                    <div class="card-footer bg-white border-0 text-center">
+                        <a href="moving_observer_bootstrap.html" class="btn btn-outline-info">Xem mô phỏng</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mô phỏng trạm quan sát đứng yên -->
+            <div class="col-md-6 col-lg-3">
+                <div class="card shadow h-100">
+                    <div class="card-header bg-warning text-white">
+                        Trạm quan sát đứng yên (Stationary Observer)
+                    </div>
+                    <div class="icon-container">
+                        <i class="fas fa-video"></i>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Mô phỏng phương pháp quan sát đứng yên tại một vị trí cố định, đếm lưu
+                            lượng xe đi qua.</p>
+                    </div>
+                    <div class="card-footer bg-white border-0 text-center">
+                        <a href="stationary_observer_bootstrap.html" class="btn btn-outline-warning">Xem mô phỏng</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tài liệu -->
+            <div class="col-12 mt-4">
+                <div class="card shadow">
+                    <div class="card-header bg-dark text-white">
+                        Tài liệu và hướng dẫn
+                    </div>
+                    <div class="card-body d-flex align-items-center">
+                        <i class="fas fa-book me-4" style="font-size: 2.5rem; color: #20c997;"></i>
+                        <div>
+                            <h5 class="card-title">Tài liệu hướng dẫn</h5>
+                            <p class="card-text">Tài liệu và hướng dẫn sử dụng các mô phỏng, bao gồm thông tin kỹ thuật
+                                và giải thích phương pháp.</p>
+                            <a href="README.md" class="btn btn-outline-dark">Xem tài liệu</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="mt-5 text-center text-muted">
+            <p>© 2024 Mô phỏng kỹ thuật giao thông - Phát triển với Bootstrap và JavaScript</p>
+        </footer>
+    </div>
+
+    <!-- jQuery và Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

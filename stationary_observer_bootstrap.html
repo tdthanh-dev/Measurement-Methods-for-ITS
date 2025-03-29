@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trạm quan sát đứng yên - Bootstrap</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Thiết lập nền trang */
+        body {
+            background-color: #f8f9fa;
+        }
+
+        /* Khu vực mô phỏng chính */
+        .simulation-area {
+            position: relative;
+            height: 450px;
+            overflow: hidden;
+            background-color: white;
+        }
+
+        /* Đường giao thông - màu nền xám đại diện cho mặt đường */
+        .road {
+            position: absolute;
+            width: 100%;
+            height: 240px;
+            background-color: #495057;
+            top: 80px;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Phân cách giữa 2 hướng đường */
+        .road-divider {
+            position: absolute;
+            width: 100%;
+            height: 6px;
+            background-color: #ffd43b;
+            top: 197px;
+            z-index: 2;
+        }
+
+        /* Vạch kẻ phân làn đường đi lên */
+        .lane-divider-up {
+            position: absolute;
+            width: 100%;
+            height: 3px;
+            background-color: #fff;
+            top: 138px;
+            z-index: 2;
+            border-style: dashed;
+        }
+
+        /* Vạch kẻ phân làn đường đi xuống */
+        .lane-divider-down {
+            position: absolute;
+            width: 100%;
+            height: 3px;
+            background-color: #fff;
+            top: 255px;
+            z-index: 2;
+            border-style: dashed;
+        }
+
+        /* Làn đường bên phải - chiều đi lên - làn nhanh */
+        .lane-up-fast {
+            position: absolute;
+            width: 100%;
+            height: 55px;
+            top: 82px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 5px 5px 0 0;
+        }
+
+        /* Làn đường bên phải - chiều đi lên - làn chậm */
+        .lane-up-slow {
+            position: absolute;
+            width: 100%;
+            height: 55px;
+            top: 142px;
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        /* Làn đường bên trái - chiều đi xuống - làn nhanh */
+        .lane-down-fast {
+            position: absolute;
+            width: 100%;
+            height: 55px;
+            top: 203px;
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        /* Làn đường bên trái - chiều đi xuống - làn chậm */
+        .lane-down-slow {
+            position: absolute;
+            width: 100%;
+            height: 55px;
+            top: 263px;
+            background-color: rgba(0, 0, 0, 0.15);
+            border-radius: 0 0 5px 5px;
+        }
+
+        /* Xe thăm dò - xe đo lường (phương tiện màu xanh lá) */
+        .probe-car {
+            position: absolute;
+            width: 120px;
+            height: 50px;
+            background-color: #20c997;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            border: 2px solid #0ca678;
+            z-index: 10;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            top: 100px !important;
+            /* Cố định vị trí thẳng giữa làn nhanh đi lên */
+        }
+
+        /* Xe đi lên (màu xanh dương) */
+        .car-up {
+            position: absolute;
+            width: 80px;
+            height: 40px;
+            background-color: #4dabf7;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            z-index: 5;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Xe đi xuống (màu cam) */
+        .car-down {
+            position: absolute;
+            width: 80px;
+            height: 40px;
+            background-color: #fd7e14;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            z-index: 5;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+            transform: rotate(180deg);
+        }
+
+        /* Đoạn đường di chuyển */
+        .probe-timeline {
+            position: absolute;
+            width: 700px;
+            height: 2px;
+            background-color: #adb5bd;
+            top: 380px;
+            left: 50px;
+        }
+
+        /* Đánh dấu thời gian */
+        .time-marker {
+            position: absolute;
+            width: 2px;
+            height: 10px;
+            background-color: #495057;
+            top: 375px;
+        }
+
+        /* Nhãn thời gian */
+        .time-label {
+            position: absolute;
+            top: 390px;
+            font-size: 12px;
+            transform: translateX(-50%);
+            white-space: nowrap;
+        }
+
+        /* Điểm dữ liệu của xe thăm dò */
+        .probe-point {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #20c997;
+            border: 2px solid #0ca678;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+
+        /* Đường đi của xe thăm dò trong biểu đồ */
+        .probe-path {
+            position: absolute;
+            height: 2px;
+            background-color: #20c997;
+            top: 330px;
+        }
+
+        /* Khung hiển thị công thức và giải thích */
+        .formula-box {
+            background-color: rgba(255, 255, 255, 0.95);
+            border: 3px solid #20c997;
+            border-radius: 10px;
+            padding: 15px;
+            line-height: 1.5;
+            font-weight: 500;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Các hàng dữ liệu trong bảng điều khiển */
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        /* Màu cho giá trị tính toán */
+        .calculated {
+            color: #20c997;
+        }
+
+        /* Animation di chuyển cho xe đi lên (từ trái sang phải) */
+        @keyframes moveCarUp {
+            0% {
+                left: 25px;
+            }
+
+            100% {
+                left: calc(100% - 150px);
+            }
+        }
+
+        /* Animation di chuyển cho xe đi xuống (từ phải sang trái) */
+        @keyframes moveCarDown {
+            0% {
+                left: calc(100% - 150px);
+            }
+
+            100% {
+                left: 25px;
+            }
+        }
+
+        /* Vạch kẻ dọc thể hiện điểm đếm xe */
+        .counting-line {
+            position: absolute;
+            width: 3px;
+            height: 240px;
+            background-color: #ff0800;
+            right: 25px;
+            top: -15px;
+            z-index: 11;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Trạm quan sát đứng yên (phương tiện màu xanh lá) */
+        #stationary-observer {
+            position: absolute;
+            width: 80px;
+            height: 60px;
+            background-color: #20c997;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            border: 2px solid #0ca678;
+            z-index: 10;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            top: 20px;
+            left: 450px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container py-4">
+        <!-- Tiêu đề và mô tả -->
+        <h1 class="text-center mb-2">Trạm quan sát đứng yên (Stationary Observer)</h1>
+        <h4 class="text-center text-muted mb-4">Phương pháp đo lường thông số giao thông bằng trạm đứng yên</h4>
+
+        <div class="row">
+            <!-- Khu vực hiển thị mô phỏng - chiếm 8/12 độ rộng trên màn hình lớn -->
+            <div class="col-lg-8">
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Mô phỏng trạm quan sát đứng yên</h5>
+                    </div>
+                    <div class="card-body simulation-area">
+                        <!-- Đường giao thông hai chiều với phân làn -->
+                        <div class="road"></div>
+                        <div class="lane-up-fast"></div>
+                        <div class="lane-up-slow"></div>
+                        <div class="lane-down-fast"></div>
+                        <div class="lane-down-slow"></div>
+                        <div class="road-divider"></div>
+                        <div class="lane-divider-up"></div>
+                        <div class="lane-divider-down"></div>
+
+                        <!-- Vạch kẻ đường đứt đoạn được tạo động bằng JavaScript -->
+
+                        <!-- Vạch đếm xe cho trạm quan sát -->
+                        <div class="counting-line"
+                            style="position: absolute; left: 450px; top: 80px; height: 240px; width: 5px; background-color: #ff0800; z-index: 10;">
+                        </div>
+
+                        <!-- Xe thăm dò - đặt ở lề đường -->
+                        <div id="stationary-observer" style="top: 20px; left: 450px;">
+                            <i class="fas fa-video me-1"></i>
+                            <span>Xe dừng</span>
+                        </div>
+
+                        <!-- Các xe đi lên làn nhanh (chiều từ trái sang phải) -->
+                        <div id="car-up-fast-1" class="car-up" style="top: 95px; left: 0px; visibility: hidden;">
+                            <span>A1</span>
+                        </div>
+                        <div id="car-up-fast-2" class="car-up" style="top: 95px; left: 0px; visibility: hidden;">
+                            <span>A2</span>
+                        </div>
+
+                        <!-- Các xe đi lên làn chậm (chiều từ trái sang phải) -->
+                        <div id="car-up-slow-1" class="car-up" style="top: 155px; left: 0px; visibility: hidden;">
+                            <span>A3</span>
+                        </div>
+                        <div id="car-up-slow-2" class="car-up" style="top: 155px; left: 0px; visibility: hidden;">
+                            <span>A4</span>
+                        </div>
+
+                        <!-- Các xe đi xuống làn nhanh (chiều từ phải sang trái) -->
+                        <div id="car-down-fast-1" class="car-down" style="top: 215px; left: 0px; visibility: hidden;">
+                            <span>B1</span>
+                        </div>
+                        <div id="car-down-fast-2" class="car-down" style="top: 215px; left: 0px; visibility: hidden;">
+                            <span>B2</span>
+                        </div>
+
+                        <!-- Các xe đi xuống làn chậm (chiều từ phải sang trái) -->
+                        <div id="car-down-slow-1" class="car-down" style="top: 275px; left: 0px; visibility: hidden;">
+                            <span>B3</span>
+                        </div>
+                        <div id="car-down-slow-2" class="car-down" style="top: 275px; left: 0px; visibility: hidden;">
+                            <span>B4</span>
+                        </div>
+
+                        <!-- Biểu đồ dữ liệu thu thập theo thời gian -->
+                        <div class="probe-timeline"></div>
+
+                        <!-- Đánh dấu và nhãn thời gian -->
+                        <div class="time-marker" style="left: 50px;"></div>
+                        <div class="time-label" style="left: 50px;">0 phút</div>
+
+                        <div class="time-marker" style="left: 190px;"></div>
+                        <div class="time-label" style="left: 190px;">5 phút</div>
+
+                        <div class="time-marker" style="left: 330px;"></div>
+                        <div class="time-label" style="left: 330px;">10 phút</div>
+
+                        <div class="time-marker" style="left: 470px;"></div>
+                        <div class="time-label" style="left: 470px;">15 phút</div>
+
+                        <div class="time-marker" style="left: 610px;"></div>
+                        <div class="time-label" style="left: 610px;">20 phút</div>
+
+                        <div class="time-marker" style="left: 750px;"></div>
+                        <div class="time-label" style="left: 750px;">25 phút</div>
+
+                        <!-- Đường đi và điểm dữ liệu của xe thăm dò -->
+                        <!-- <div class="probe-path" style="left: 50px; width: 700px;"></div> -->
+
+                        <!-- Các điểm dữ liệu của xe thăm dò -->
+                        <!-- <div class="probe-point" style="left: 50px; top: 330px;"></div>
+                        <div class="probe-point" style="left: 190px; top: 300px;"></div>
+                        <div class="probe-point" style="left: 330px; top: 270px;"></div>
+                        <div class="probe-point" style="left: 470px; top: 300px;"></div>
+                        <div class="probe-point" style="left: 610px; top: 330px;"></div>
+                        <div class="probe-point" style="left: 750px; top: 310px;"></div> -->
+
+                        <!-- Công thức tính toán dựa trên xe thăm dò -->
+                        <div class="formula-box position-fixed start-50 translate-middle-x"
+                            style="top: 50%; transform: translate(-50%, -50%); max-width: 600px; z-index: 1050;">
+                            <button type="button" class="btn-close position-absolute top-0 end-0 m-2" aria-label="Close"
+                                id="close-formula"></button>
+                            <h5 class="text-center mb-3">Phương pháp trạm quan sát đứng yên (Stationary Observer)</h5>
+                            - Công thức tính lưu lượng: q = n / T
+                            <p class="mt-2 mb-0">
+                                <small>Trong đó: n là số xe đi qua điểm đo trong thời gian T (phút)</small>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chú thích các ký hiệu -->
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0">Chú thích</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-4 mb-2">
+                                <div class="d-flex align-items-center">
+                                    <div
+                                        style="width: 30px; height: 20px; background-color: #20c997; border-radius: 4px; margin-right: 10px;">
+                                    </div>
+                                    <span>Trạm quan sát đứng yên</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <div class="d-flex align-items-center">
+                                    <div
+                                        style="width: 30px; height: 20px; background-color: #4dabf7; border-radius: 4px; margin-right: 10px;">
+                                    </div>
+                                    <span>Xe đi lên</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <div class="d-flex align-items-center">
+                                    <div
+                                        style="width: 30px; height: 20px; background-color: #fd7e14; border-radius: 4px; margin-right: 10px;">
+                                    </div>
+                                    <span>Xe đi xuống</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <p class="mb-0"><strong>Vạch đỏ dọc</strong>: Vạch đếm xe tại trạm quan sát</p>
+                            <p class="mb-0"><strong>n</strong>: Số xe đi qua điểm đo trong thời gian T</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ô giải thích và thông tin bổ sung -->
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">Giải thích về phương pháp xe thăm dò đứng yên</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Phương pháp xe thăm dò đứng yên (Stationary Observer) là kỹ thuật đo lường các thông số giao
+                            thông bằng cách đặt một điểm quan sát cố định bên đường và đếm số lượng xe đi qua trong một
+                            khoảng thời gian.</p>
+                        <p>Trong mô phỏng này, trạm quan sát đặt tại vị trí cố định trên đường hai chiều với mỗi chiều
+                            có hai làn đường. Hệ thống sẽ đếm các xe đi qua điểm đo và theo dõi số lượng xe trong một
+                            đoạn đường có chiều dài xác định.</p>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><span class="fw-bold text-primary">Ưu điểm của phương pháp đứng yên:</span></p>
+                                <ul>
+                                    <li>Đơn giản, dễ thực hiện và ít tốn kém</li>
+                                    <li>Có thể sử dụng camera hoặc cảm biến tự động</li>
+                                    <li>Độ chính xác cao trong việc đếm số lượng xe</li>
+                                    <li>Dễ dàng đo lường lưu lượng giao thông (xe/giờ)</li>
+                                    <li>Có thể thu thập dữ liệu liên tục trong thời gian dài</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <p><span class="fw-bold text-danger">Hạn chế:</span></p>
+                                <ul>
+                                    <li>Chỉ thu thập dữ liệu tại một vị trí cố định</li>
+                                    <li>Không cung cấp thông tin về thời gian di chuyển</li>
+                                    <li>Khó xác định chính xác mật độ giao thông trên đoạn đường dài</li>
+                                    <li>Cần nhiều điểm đo để có dữ liệu đầy đủ cho mạng lưới đường</li>
+                                    <li>Đo mật độ đòi hỏi ảnh chụp hoặc quan sát từ trên cao</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bảng điều khiển mô phỏng - chiếm 4/12 độ rộng màn hình lớn -->
+            <div class="col-lg-4">
+                <div class="card shadow mb-3">
+                    <div class="card-header bg-primary text-white py-2">
+                        <h5 class="mb-0">Điều khiển mô phỏng</h5>
+                    </div>
+                    <div class="card-body p-2">
+                        <!-- Hiển thị thông số và điều chỉnh tham số -->
+                        <div class="row g-2">
+                            <!-- Thông số đo lường -->
+                            <div class="col-md-6 col-lg-12">
+                                <div class="small">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>Số xe đếm được (↑):</span>
+                                        <span id="incoming-count" class="text-primary fw-bold">0 xe</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>Số xe đếm được (↓):</span>
+                                        <span id="outgoing-count" class="text-primary fw-bold">0 xe</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>Thời gian quan sát:</span>
+                                        <span id="observation-time" class="text-primary fw-bold">0 phút</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Kết quả tính toán -->
+                            <div class="col-md-6 col-lg-12">
+                                <div class="small bg-light p-2 rounded">
+                                    <div class="d-flex justify-content-between">
+                                        <span>Lưu lượng (q):</span>
+                                        <span id="flow-rate" class="fw-bold calculated">4.0 xe/phút</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Điều chỉnh tham số -->
+                        <div class="mt-2">
+                            <div class="mb-2">
+                                <label for="incoming-slider" class="form-label small mb-0">Số xe đến (10-60):</label>
+                                <input type="range" class="form-range" id="incoming-slider" min="10" max="60" value="42"
+                                    step="1">
+                            </div>
+                            <div class="mb-2">
+                                <label for="outgoing-slider" class="form-label small mb-0">Số xe đi (5-40):</label>
+                                <input type="range" class="form-range" id="outgoing-slider" min="5" max="40" value="18"
+                                    step="1">
+                            </div>
+                            <div class="mb-2">
+                                <label for="observation-time-slider" class="form-label small mb-0">Thời gian quan sát
+                                    (phút):</label>
+                                <input type="range" class="form-range" id="observation-time-slider" min="5" max="30"
+                                    value="15" step="1">
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button id="start-button" class="btn btn-primary btn-sm flex-grow-1">
+                                    <i class="fas fa-play me-1"></i>Bắt đầu
+                                </button>
+                                <button id="reset-button" class="btn btn-secondary btn-sm flex-grow-1">
+                                    <i class="fas fa-redo-alt me-1"></i>Đặt lại
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Giải thích công thức -->
+            <div class="card shadow">
+                <div class="card-header bg-success text-white py-2">
+                    <h5 class="mb-0">Giải thích công thức</h5>
+                </div>
+                <div class="card-body p-2 small">
+                    <p class="mb-1"><strong>Ký hiệu:</strong></p>
+                    <ul class="mb-2 ps-3">
+                        <li><strong>n</strong>: Số xe đi qua điểm đo</li>
+                        <li><strong>T</strong>: Thời gian quan sát (phút)</li>
+                    </ul>
+                    <p class="mb-0">Phương pháp đứng yên chỉ cần đếm số lượng xe đi qua trạm (n) trong khoảng thời
+                        gian quan sát (T) để tính lưu lượng giao thông (q = n/T).</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery và Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // PHẦN 1: KHỞI TẠO BIẾN VÀ PHẦN TỬ DOM
+            // Tham chiếu đến các phần tử DOM
+            const $probeCar = $('#probe-car');
+            const $carsUp = $('.car-up');
+            const $carsDown = $('.car-down');
+
+            // Biến điều khiển mô phỏng
+            let animationId = null;
+            let isAnimating = false;
+            let probeCarSpeed = 35; // km/h
+            let incomingCount = 42; // số xe đến (cùng chiều)
+            let outgoingCount = 18; // số xe đi (ngược chiều)
+            let observationTime = 15; // phút
+
+            // PHẦN 2: TẠO VẠCH KẺ ĐƯỜNG ĐỨT ĐOẠN
+            const roadWidth = $('.road').width();
+            const spacing = roadWidth / 15;
+
+            for (let i = 0; i < 15; i++) {
+                $('.simulation-area').append(`<div class="road-marking-dashed" style="left: ${spacing * i + spacing / 2}px;"></div>`);
+            }
+
+            // PHẦN 3: HÀM TÍNH TOÁN
+            // Tính lưu lượng giao thông (xe/phút)
+            function calculateFlowRate() {
+                // q = (Ma + Mw) / T
+                return (incomingCount + outgoingCount) / observationTime;
+            }
+
+            // Tính mật độ giao thông (xe/km)
+            function calculateDensity() {
+                // k = (Ma - Mw) / (T × v_obs)
+                // Chuyển đổi tốc độ từ km/h sang km/phút
+                const probeSpeedInKmPerMin = probeCarSpeed / 60;
+                return (incomingCount - outgoingCount) / (observationTime * probeSpeedInKmPerMin);
+            }
+
+            // Tính vận tốc dòng xe (km/h)
+            function calculateSpeed() {
+                const flowRate = calculateFlowRate(); // xe/phút
+                const density = calculateDensity(); // xe/km
+
+                // Kiểm tra để tránh chia cho 0 hoặc số âm
+                if (density <= 0) {
+                    return 0;
+                }
+
+                // Chuyển đổi flow rate từ xe/phút sang xe/giờ và chia cho mật độ (xe/km)
+                return flowRate * 60 / density;
+            }
+
+            // PHẦN 4: CẬP NHẬT GIAO DIỆN
+            // Cập nhật hiển thị các thông số
+            function updateDisplayInfo() {
+                // Cập nhật giá trị đầu vào
+                $('#incoming-count').text(incomingCount + ' xe');
+                $('#outgoing-count').text(outgoingCount + ' xe');
+                $('#observation-time').text(observationTime + ' phút');
+
+                // Tính toán và hiển thị kết quả
+                const flowRate = calculateFlowRate();
+                $('#flow-rate').text(flowRate.toFixed(1) + ' xe/phút');
+            }
+
+            // PHẦN 5: XỬ LÝ SỰ KIỆN SLIDER
+            // Cập nhật khi số xe đến thay đổi
+            $('#incoming-slider').on('input', function () {
+                incomingCount = parseInt($(this).val());
+                // Đảm bảo Ma >= Mw để mật độ không âm
+                if (incomingCount < outgoingCount) {
+                    outgoingCount = incomingCount;
+                    $('#outgoing-slider').val(outgoingCount);
+                }
+                updateDisplayInfo();
+            });
+
+            // Cập nhật khi số xe đi thay đổi
+            $('#outgoing-slider').on('input', function () {
+                outgoingCount = parseInt($(this).val());
+                // Đảm bảo Ma >= Mw
+                if (outgoingCount > incomingCount) {
+                    outgoingCount = incomingCount;
+                    $(this).val(outgoingCount);
+                }
+                updateDisplayInfo();
+            });
+
+            // Cập nhật khi thời gian quan sát thay đổi
+            $('#observation-time-slider').on('input', function () {
+                observationTime = parseInt($(this).val());
+                updateDisplayInfo();
+            });
+
+            // Cập nhật khi tốc độ xe thăm dò thay đổi
+            $('#probe-speed-slider').on('input', function () {
+                probeCarSpeed = parseInt($(this).val());
+                updateDisplayInfo();
+
+                // Nếu đang chạy animation và tốc độ về 0, đặt lại vị trí xe
+                if (isAnimating && probeCarSpeed <= 1) {
+                    resetCarPositions();
+                    isAnimating = false;
+                }
+            });
+
+            // PHẦN 6: XỬ LÝ SỰ KIỆN CÁC NÚT ĐIỀU KHIỂN
+            // Bắt đầu mô phỏng
+            $('#start-button').click(function () {
+                if (isAnimating) return;
+
+                // Kiểm tra xem tốc độ có bằng 0 không
+                if (probeCarSpeed <= 1) {
+                    alert("Tốc độ xe thăm dò phải lớn hơn 0 km/h để bắt đầu mô phỏng!");
+                    return;
+                }
+
+                // Kiểm tra để đảm bảo Ma >= Mw
+                if (incomingCount < outgoingCount) {
+                    alert("Số xe đến (Ma) phải lớn hơn hoặc bằng số xe đi (Mw) để đảm bảo tính hợp lý của mô hình!");
+                    outgoingCount = incomingCount;
+                    $('#outgoing-slider').val(outgoingCount);
+                    updateDisplayInfo();
+                    return;
+                }
+
+                isAnimating = true;
+
+                // Đặt lại vị trí tất cả xe
+                resetCarPositions();
+
+                // Tạo hiệu ứng delay để reset animation
+                setTimeout(function () {
+                    // Thiết lập animation cho xe thăm dò (đi lên)
+                    const probeAnimationDuration = 15000 / probeCarSpeed * 35; // Tỉ lệ với tốc độ cơ sở 35km/h
+
+                    $probeCar.css({
+                        'animation': `moveCarUp ${probeAnimationDuration}ms linear forwards`,
+                        'visibility': 'visible'
+                    });
+
+                    // Tính tốc độ dòng xe
+                    const streamSpeed = calculateSpeed();
+
+                    // Tính toán số lượng xe hiển thị dựa trên tỷ lệ với incomingCount và outgoingCount
+                    const maxVisibleCarsUp = 4; // Tổng số xe chiều đi lên có thể hiển thị
+                    const maxVisibleCarsDown = 4; // Tổng số xe chiều đi xuống có thể hiển thị
+
+                    // Tính phân bố xe trên làn nhanh/chậm (tối đa 2 xe mỗi làn)
+                    let fastLaneUp = Math.min(2, Math.ceil(incomingCount * 0.6 / 10)); // 60% xe trên làn nhanh
+                    let slowLaneUp = Math.min(2, Math.ceil(incomingCount * 0.4 / 10)); // 40% xe trên làn chậm
+
+                    let fastLaneDown = Math.min(2, Math.ceil(outgoingCount * 0.7 / 5)); // 70% xe trên làn nhanh
+                    let slowLaneDown = Math.min(2, Math.ceil(outgoingCount * 0.3 / 5)); // 30% xe trên làn chậm
+
+                    // Hiển thị xe chiều đi lên làn nhanh dựa trên số lượng xe thực tế
+                    for (let i = 1; i <= fastLaneUp; i++) {
+                        const $car = $(`#car-up-fast-${i}`);
+                        // Hiển thị xe sau khi có delay để tạo khoảng cách an toàn với xe thăm dò
+                        const safeDistanceDelay = i * 3000;
+
+                        setTimeout(() => {
+                            $car.css({
+                                'visibility': 'visible',
+                                'left': '25px'
+                            });
+
+                            // Tốc độ luôn chậm hơn xe thăm dò 15-30%
+                            const speedFactor = 0.7 + (Math.random() * 0.15); // 70-85% tốc độ xe thăm dò
+                            const carDuration = probeAnimationDuration / speedFactor;
+
+                            $car.css({
+                                'animation': `moveCarUp ${carDuration}ms linear forwards`
+                            });
+                        }, safeDistanceDelay);
+                    }
+
+                    // Hiển thị xe chiều đi lên làn chậm
+                    for (let i = 1; i <= slowLaneUp; i++) {
+                        const $car = $(`#car-up-slow-${i}`);
+
+                        // Điều chỉnh độ trễ để tạo khoảng cách ban đầu phù hợp hơn
+                        const safeDistanceDelay = i === 1 ? 1000 : 3500;
+
+                        setTimeout(() => {
+                            $car.css({
+                                'visibility': 'visible',
+                                'left': '25px'
+                            });
+
+                            // Điều chỉnh tốc độ cho từng xe cụ thể
+                            let speedFactor;
+                            if (i === 1) {
+                                // A3: Tăng tốc độ lên rất cao (160-180% tốc độ xe thăm dò)
+                                speedFactor = 1.6 + (Math.random() * 0.2);
+                            } else {
+                                // A4: Chậm hơn A3 nhưng vẫn nhanh hơn xe thăm dò (115-130% tốc độ xe thăm dò)
+                                speedFactor = 1.15 + (Math.random() * 0.15);
+                            }
+
+                            const carDuration = probeAnimationDuration / speedFactor;
+
+                            $car.css({
+                                'animation': `moveCarUp ${carDuration}ms linear forwards`
+                            });
+                        }, safeDistanceDelay);
+                    }
+
+                    // Tính khoảng cách giữa các xe dựa trên mật độ
+                    const density = calculateDensity(); // xe/km
+                    const roadLength = 0.8; // Chiều dài đoạn đường mô phỏng (km)
+                    const expectedCarsPerRoad = density * roadLength;
+
+                    // Hiển thị xe chiều đi xuống làn nhanh
+                    for (let i = 1; i <= fastLaneDown; i++) {
+                        const $car = $(`#car-down-fast-${i}`);
+
+                        // Tạo tốc độ phù hợp với streamSpeed đã tính
+                        // Xe ngược chiều sẽ có tốc độ tương đối với xe thăm dò là v_rel = v_stream + v_obs
+                        const relativeSpeed = streamSpeed + probeCarSpeed;
+                        const speedVariation = 0.9 + (Math.random() * 0.2); // 90-110% của tốc độ tương đối
+                        const carSpeed = relativeSpeed * speedVariation;
+
+                        // Thời gian di chuyển qua màn hình
+                        const carDuration = 15000 / carSpeed * 87;
+
+                        // Vị trí ban đầu dựa trên mật độ giao thông
+                        const roadWidth = $('.road').width();
+                        const startPos = 300 + (i - 1) * (roadWidth / (expectedCarsPerRoad + 1));
+                        const delayTime = (i - 1) * 2200;
+
+                        $car.css({
+                            'animation': `moveCarDown ${carDuration}ms linear forwards`,
+                            'animation-delay': `${delayTime}ms`,
+                            'visibility': 'visible',
+                            'left': `${startPos}px`
+                        });
+                    }
+
+                    // Hiển thị xe chiều đi xuống làn chậm
+                    for (let i = 1; i <= slowLaneDown; i++) {
+                        const $car = $(`#car-down-slow-${i}`);
+
+                        // Xe đi chậm hơn tốc độ dòng tổng thể
+                        const relativeSpeed = streamSpeed + probeCarSpeed;
+                        const speedVariation = 0.7 + (Math.random() * 0.2); // 70-90% của tốc độ tương đối
+                        const carSpeed = relativeSpeed * speedVariation;
+
+                        const carDuration = 15000 / carSpeed * 87;
+
+                        // Vị trí ban đầu dựa trên mật độ giao thông
+                        const roadWidth = $('.road').width();
+                        const startPos = 100 + (i - 1) * (roadWidth / (expectedCarsPerRoad + 1));
+                        const delayTime = (i - 1) * 3000;
+
+                        $car.css({
+                            'animation': `moveCarDown ${carDuration}ms linear forwards`,
+                            'animation-delay': `${delayTime}ms`,
+                            'visibility': 'visible',
+                            'left': `${startPos}px`
+                        });
+                    }
+
+                    // Thiết lập kết thúc animation sau khoảng thời gian dài nhất
+                    setTimeout(function () {
+                        isAnimating = false;
+                    }, probeAnimationDuration + 5000); // Thêm 5s cho animation-delay
+                }, 50);
+            });
+
+            // Đặt lại mô phỏng
+            $('#reset-button').click(function () {
+                // Dừng animation đang chạy
+                resetCarPositions();
+                isAnimating = false;
+            });
+
+            // Hàm đặt lại vị trí tất cả xe
+            function resetCarPositions() {
+                // Đặt lại vị trí xe thăm dò
+                $probeCar.css({
+                    'animation': 'none',
+                    'left': '25px',
+                    'visibility': 'visible'
+                });
+
+                // Đặt lại vị trí các xe đi lên làn nhanh (ẩn đến khi xe thăm dò di chuyển)
+                $('#car-up-fast-1, #car-up-fast-2').css({
+                    'animation': 'none',
+                    'left': '0px',
+                    'visibility': 'hidden'
+                });
+
+                // Đặt lại vị trí các xe đi lên làn chậm (ẩn đến khi xe thăm dò di chuyển)
+                $('#car-up-slow-1, #car-up-slow-2').css({
+                    'animation': 'none',
+                    'left': '0px',
+                    'visibility': 'hidden'
+                });
+
+                // Đặt lại vị trí các xe đi xuống làn nhanh
+                $('#car-down-fast-1').css({ 'animation': 'none', 'left': '300px', 'visibility': 'visible' });
+                $('#car-down-fast-2').css({ 'animation': 'none', 'left': '600px', 'visibility': 'visible' });
+
+                // Đặt lại vị trí các xe đi xuống làn chậm
+                $('#car-down-slow-1').css({ 'animation': 'none', 'left': '100px', 'visibility': 'visible' });
+                $('#car-down-slow-2').css({ 'animation': 'none', 'left': '650px', 'visibility': 'visible' });
+            }
+
+            // PHẦN 7: KHỞI TẠO BAN ĐẦU
+            // Cập nhật hiển thị ban đầu
+            updateDisplayInfo();
+
+            // Xử lý đóng mở bảng công thức
+            $('#close-formula').click(function () {
+                $('.formula-box').hide();
+            });
+
+            // Thêm nút để hiển thị lại công thức
+            $('.card-body.simulation-area').append('<button class="btn btn-sm btn-success position-absolute" style="bottom: 10px; right: 10px; z-index: 1000;" id="show-formula"><i class="fas fa-calculator me-1"></i>Công thức</button>');
+
+            // Xử lý khi click vào nút hiển thị lại
+            $('#show-formula').click(function () {
+                $('.formula-box').show();
+            });
+        });
+    </script>
+</body>
+
+</html>
