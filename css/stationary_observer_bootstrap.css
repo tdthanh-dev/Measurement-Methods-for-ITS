@@ -302,6 +302,7 @@ body {
     transform: scaleX(-1); /* Flip horizontally so vehicles face left */
 }
 
+
 .car-up span, .car-down span {
     position: absolute;
     bottom: -18px;
