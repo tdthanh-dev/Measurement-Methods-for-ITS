@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tài liệu mô phỏng vòng từ giao thông</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', serif;
+            line-height: 1.6;
+            color: #000;
+            background-color: #fff;
+            margin: 40px;
+            font-size: 12pt;
+        }
+
+        h1 {
+            font-size: 18pt;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 16pt;
+            font-weight: bold;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #000;
+            padding-bottom: 5px;
+        }
+
+        h3 {
+            font-size: 14pt;
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        h4 {
+            font-size: 12pt;
+            font-weight: bold;
+            margin-top: 15px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 10px;
+            text-align: justify;
+        }
+
+        ul,
+        ol {
+            margin-bottom: 10px;
+            padding-left: 30px;
+        }
+
+        li {
+            margin-bottom: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #000;
+        }
+
+        th,
+        td {
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+        }
+
+        code {
+            font-family: 'Courier New', monospace;
+            background-color: #f0f0f0;
+            padding: 2px 4px;
+            font-size: 90%;
+        }
+
+        .code-block {
+            font-family: 'Courier New', monospace;
+            background-color: #f0f0f0;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            white-space: pre-wrap;
+            font-size: 10pt;
+        }
+
+        .note {
+            border-left: 3px solid #000;
+            padding-left: 15px;
+            margin: 10px 0;
+            font-style: italic;
+        }
+
+        .header,
+        .footer {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .page-break {
+            page-break-after: always;
+        }
+
+        .toc {
+            margin: 20px 0;
+        }
+
+        .toc-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .toc-number {
+            margin-right: 10px;
+        }
+
+        .toc-title {
+            flex-grow: 1;
+        }
+
+        .toc-dots {
+            flex-grow: 1;
+            border-bottom: 1px dotted #000;
+            margin: 0 5px;
+        }
+
+        .toc-page {
+            text-align: right;
+        }
+
+        @media print {
+            body {
+                margin: 0;
+                padding: 20px;
+            }
+
+            .page-break {
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Trang bìa -->
+    <div class="header">
+        <h1>TÀI LIỆU MÔ PHỎNG VÒNG TỪ GIAO THÔNG</h1>
+        <p>Hướng dẫn triển khai và sử dụng</p>
+        <p>Phiên bản 1.0</p>
+        <p>Đại học Giao thông Vận tải Tp.HCM</p>
+        <p>Trịnh Đình Thành - Lớp CN22E</p>
+        <p><a href="mailto:tdthanh.dev2025@gmail.com">Email: tdthanh.dev2025@gmail.com</a> / <a
+                href="mailto:2251120247@ut.edu.vn">2251120247@ut.edu.vn</a></p>
+        <p>Source code: <a target="_blank"
+                href="https://github.com/tdthanh-dev/Measurement-Methods-for-ITS">https://github.com/tdthanh-dev/Measurement-Methods-for-ITS</a>
+        </p>
+        <p style="font-size: 10pt;">Tài liệu này chỉ mang tính chất tham khảo, không phải tài liệu chính thức. Bố cục
+            và phương pháp triển khai được trình bày chi tiết trong từng tệp HTML, bao gồm hướng dẫn cụ thể về cách
+            thức thực hiện và các bước triển khai.</p>
+    </div>
+
+    <div class="page-break"></div>
+
+
+    <div class="page-break"></div>
+
+    <!-- Mục lục -->
+    <h2>MỤC LỤC</h2>
+    <div class="toc">
+        <a href="#gioi-thieu-y-tuong">
+            <div class="toc-item">
+                <span class="toc-number">1.</span>
+                <span class="toc-title">Giới thiệu ý tưởng</span>
+                <span class="toc-dots"></span>
+                <span class="toc-page">1</span>
+            </div>
+        </a>
+        <a href="#cong-nghe-su-dung">
+            <div class="toc-item">
+                <span class="toc-number">2.</span>
+                <span class="toc-title">Công nghệ sử dụng</span>
+                <span class="toc-dots"></span>
+                <span class="toc-page">3</span>
+            </div>
+        </a>
+        <a href="#cau-truc-code">
+            <div class="toc-item">
+                <span class="toc-number">3.</span>
+                <span class="toc-title">Cấu trúc code</span>
+                <span class="toc-dots"></span>
+                <span class="toc-page">5</span>
+            </div>
+        </a>
+        <a href="#trien-khai-chi-tiet">
+            <div class="toc-item">
+                <span class="toc-number">4.</span>
+                <span class="toc-title">Triển khai chi tiết</span>
+                <span class="toc-dots"></span>
+                <span class="toc-page">8</span>
+            </div>
+        </a>
+        <a href="#huong-dan-tung-buoc">
+            <div class="toc-item">
+                <span class="toc-number">5.</span>
+                <span class="toc-title">Hướng dẫn từng bước</span>
+                <span class="toc-dots"></span>
+                <span class="toc-page">12</span>
+            </div>
+        </a>
+        <a href="#cach-export-de-dua-vao-slide">
+            <div class="toc-item">
+                <span class="toc-number">6.</span>
+                <span class="toc-title">Cách export để đưa vào slide</span>
+                <span class="toc-dots"></span>
+                <span class="toc-page">15</span>
+            </div>
+            <a href="#tips-tricks">
+                <div class="toc-item">
+                    <span class="toc-number">7.</span>
+                    <span class="toc-title">Tips & Tricks</span>
+                    <span class="toc-dots"></span>
+                    <span class="toc-page">17</span>
+                </div>
+            </a>
+    </div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- Nội dung chính -->
+    <h2 id="gioi-thieu-y-tuong">1. GIỚI THIỆU Ý TƯỞNG</h2>
+    <p>
+        Vòng từ giao thông (traffic loop sensors) là thiết bị quan trọng trong hệ thống kiểm soát giao thông
+        hiện đại. Để hiểu rõ cách hoạt động của chúng, chúng tôi đã phát triển mô phỏng trực quan sử dụng
+        JavaScript vì những lý do sau:
+    </p>
+
+    <h3>1.1. Tính tương tác cao</h3>
+    <ul>
+        <li>Điều chỉnh tham số trực tiếp (tốc độ, khoảng cách)</li>
+        <li>Phản hồi thời gian thực</li>
+        <li>Tương tác qua UI (nút bấm, thanh trượt)</li>
+        <li>Trải nghiệm học tập chủ động</li>
+    </ul>
+
+    <h3>1.2. Hiệu năng animation tối ưu</h3>
+    <ul>
+        <li>requestAnimationFrame() cho animation mượt mà</li>
+        <li>Hiệu suất 60fps mượt mà</li>
+        <li>Tối ưu tải browser</li>
+        <li>Timing chính xác với performance.now()</li>
+    </ul>
+
+    <div class="note">
+        <p><strong>Nguyên lý hoạt động của vòng từ:</strong> Vòng từ giao thông hoạt động dựa trên nguyên lý cảm ứng
+            điện từ. Khi phương tiện có khung kim loại đi qua, từ trường thay đổi làm biến thiên điện áp trong mạch. Sự
+            thay đổi này được ghi nhận để phát hiện phương tiện và đo các thông số như tốc độ, thời gian chiếm dụng và
+            mật độ giao thông.</p>
+    </div>
+
+    <h2 id="cong-nghe-su-dung">2. CÔNG NGHỆ SỬ DỤNG</h2>
+
+    <h3>2.1. Công nghệ nền tảng</h3>
+    <h4>HTML5</h4>
+    <ul>
+        <li>Cấu trúc trang web</li>
+        <li>Canvas cho animation phức tạp</li>
+        <li>Semantic elements (section, article, nav)</li>
+    </ul>
+
+    <h4>CSS3</h4>
+    <ul>
+        <li>Styling và layout</li>
+        <li>Animations và transitions</li>
+        <li>Responsive design (media queries)</li>
+        <li>Flexbox và Grid system</li>
+    </ul>
+
+    <h4>JavaScript (ES6+)</h4>
+    <ul>
+        <li>DOM manipulation</li>
+        <li>Animation timing với requestAnimationFrame</li>
+        <li>Event handling & async functions</li>
+        <li>Calculations và thuật toán</li>
+    </ul>
+
+    <h3>2.2. Thư viện và tools</h3>
+    <h4>Bootstrap 5</h4>
+    <ul>
+        <li>Grid system 12 cột</li>
+        <li>Components (cards, buttons, forms)</li>
+        <li>Utilities (spacing, display, flex)</li>
+        <li>JavaScript plugins (modals, accordions)</li>
+    </ul>
+
+    <h4>jQuery</h4>
+    <ul>
+        <li>DOM manipulation đơn giản</li>
+        <li>Event handling & method chaining</li>
+        <li>Animation helpers</li>
+    </ul>
+
+    <h4>Font Awesome</h4>
+    <ul>
+        <li>Icon cho giao diện</li>
+        <li>Biểu tượng phương tiện (car, truck)</li>
+        <li>Biểu tượng điều khiển (play, pause, reset)</li>
+    </ul>
+
+    <h3>2.3. API và kỹ thuật cần nắm vững</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Kỹ thuật/API</th>
+                <th>Chức năng</th>
+                <th>Cách sử dụng trong mô phỏng</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>requestAnimationFrame()</code></td>
+                <td>
+                    <ul>
+                        <li>Animation đồng bộ với refresh rate màn hình</li>
+                        <li>Tối ưu hiệu suất với 60fps</li>
+                        <li>Tự động pause khi tab không focus</li>
+                    </ul>
+                </td>
+                <td>
+                    <div class="code-block">function animate(timestamp) {
+                        updatePositions();
+                        checkCollisions();
+                        requestAnimationFrame(animate);
+                        }</div>
+                </td>
+            </tr>
+            <tr>
+                <td><code>performance.now()</code></td>
+                <td>
+                    <ul>
+                        <li>Đo thời gian chính xác (microseconds)</li>
+                        <li>Không bị ảnh hưởng bởi system clock</li>
+                        <li>Tính toán thời gian giữa các frame</li>
+                    </ul>
+                </td>
+                <td>
+                    <div class="code-block">const startTime = performance.now();
+                        // ... sau đó
+                        const elapsedTime = performance.now() - startTime;</div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2 id="cau-truc-code">3. CẤU TRÚC CODE</h2>
+    <div class="note">
+        <p><strong>Kiến trúc phần mềm:</strong> Dự án sử dụng mô hình module rõ ràng, tách biệt các thành phần để dễ bảo
+            trì và mở rộng. Phân tách các nhiệm vụ thành các module nhỏ, với mỗi module phụ trách một chức năng cụ thể.
+        </p>
+    </div>
+
+    <h3>3.1. Cấu trúc thư mục và tổ chức file</h3>
+    <p>Dự án được tổ chức theo cấu trúc sau:</p>
+    <div class="code-block">project/
+        ├── single_loop_bootstrap.html # Mô phỏng vòng từ đơn, sử dụng Bootstrap
+        ├── double_loop_bootstrap.html # Mô phỏng vòng từ kép, sử dụng Bootstrap
+        ├── stationary_observer_bootstrap.html # Mô phỏng quan sát tĩnh
+        ├── moving_observer_bootstrap.html # Mô phỏng quan sát động
+        ├── index.html # Trang chủ giới thiệu
+        ├── tailieu.html # Tài liệu mô phỏng (file hiện tại)
+        └── README.md # Tài liệu hướng dẫn dạng markdown</div>
+
+    <h3 id="mo-ta-cac-file-html-chinh">3.2. Mô tả các file HTML chính</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Tên file</th>
+                <th>Mô tả</th>
+                <th>Chức năng chính</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>single_loop_bootstrap.html</code></td>
+                <td>Mô phỏng hoạt động của vòng từ đơn</td>
+                <td>
+                    <ul>
+                        <li>Hiển thị một vòng từ trên đường giao thông</li>
+                        <li>Mô phỏng xe di chuyển qua vòng từ</li>
+                        <li>Tính toán thời gian chiếm dụng vòng từ</li>
+                        <li>Ước tính tốc độ dựa trên công thức v = (L + D) / T</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td><code>double_loop_bootstrap.html</code></td>
+                <td>Mô phỏng hoạt động của vòng từ kép</td>
+                <td>
+                    <ul>
+                        <li>Hiển thị hai vòng từ được đặt cách nhau một khoảng xác định</li>
+                        <li>Tính toán chính xác tốc độ dựa trên khoảng cách giữa hai vòng từ</li>
+                        <li>Đo thời gian xe di chuyển giữa hai vòng từ</li>
+                        <li>Tính tốc độ bằng công thức v = S / (T₂ - T₁)</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td><code>stationary_observer_bootstrap.html</code></td>
+                <td>Mô phỏng vòng từ với quan sát tĩnh</td>
+                <td>
+                    <ul>
+                        <li>Hiển thị quan sát từ góc nhìn cố định</li>
+                        <li>Cho phép theo dõi nhiều phương tiện cùng lúc</li>
+                        <li>Phân tích mật độ giao thông và chu kỳ đèn tín hiệu</li>
+                        <li>Hỗ trợ hiển thị dữ liệu thống kê</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td><code>moving_observer_bootstrap.html</code></td>
+                <td>Mô phỏng vòng từ với quan sát động</td>
+                <td>
+                    <ul>
+                        <li>Quan sát từ góc nhìn di chuyển theo phương tiện</li>
+                        <li>Hiệu ứng parallax khi di chuyển</li>
+                        <li>Phân tích hiệu Doppler trong việc đo tốc độ</li>
+                        <li>Mô phỏng hiệu ứng thay đổi tần số khi di chuyển</li>
+                    </ul>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3 id="cau-truc-chung-cua-cac-file-mo-phong">3.3. Cấu trúc chung của các file mô phỏng</h3>
+    <p>Mỗi file HTML mô phỏng đều được cấu trúc theo các phần sau:</p>
+
+    <ol>
+        <li><strong>Phần khai báo và metadata</strong>: Đầu file, chứa DOCTYPE, meta tags, tiêu đề và liên kết CSS/JS
+        </li>
+        <li><strong>Khu vực hiển thị mô phỏng</strong>: Container chính hiển thị đường giao thông, vòng từ và phương
+            tiện</li>
+        <li><strong>Bảng điều khiển</strong>: UI cho phép người dùng điều chỉnh tham số của mô phỏng</li>
+        <li><strong>Hiển thị dữ liệu</strong>: Khu vực hiển thị kết quả tính toán và thông số đo được</li>
+        <li><strong>Mã JavaScript</strong>: Phần cuối file chứa mã JS hoặc liên kết đến các file JS riêng biệt</li>
+    </ol>
+
+    <h4>Ví dụ cấu trúc HTML cơ bản từ file <code>single_loop_bootstrap.html</code>:</h4>
+    <div class="code-block">&lt;!DOCTYPE html>
+        &lt;html lang="vi">
+        &lt;head>
+        &lt;meta charset="UTF-8">
+        &lt;meta name="viewport" content="width=device-width, initial-scale=1.0">
+        &lt;title>Mô phỏng vòng từ đơn&lt;/title>
+        &lt;link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        &lt;link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        &lt;style>
+        /* CSS cho mô phỏng */
+        &lt;/style>
+        &lt;/head>
+        &lt;body>
+        &lt;div class="container py-4">
+        &lt;!-- Tiêu đề và mô tả -->
+        &lt;h1 class="text-center mb-2">Nguyên lý hoạt động của vòng từ đơn&lt;/h1>
+
+        &lt;div class="row">
+        &lt;!-- Khu vực hiển thị mô phỏng -->
+        &lt;div class="col-lg-9">
+        &lt;div class="card shadow simulation-area mb-4">
+        &lt;!-- Đường giao thông -->
+        &lt;div class="road">&lt;/div>
+
+        &lt;!-- Vòng từ - cảm biến từ trên đường -->
+        &lt;div class="loop-sensor">
+        &lt;div class="text-center mt-5 small bg-white rounded px-1">Độ rộng: 2m&lt;/div>
+        &lt;/div>
+
+        &lt;!-- Xe di chuyển qua vòng từ -->
+        &lt;div id="vehicle" class="vehicle px-3">...&lt;/div>
+
+        &lt;!-- Các phần tử hiển thị thời gian và đánh dấu -->
+        ...
+        &lt;/div>
+        &lt;/div>
+
+        &lt;!-- Bảng điều khiển mô phỏng -->
+        &lt;div class="col-lg-3">
+        &lt;div class="card shadow mb-4">
+        &lt;div class="card-header bg-primary text-white text-center py-3">
+        &lt;h5 class="mb-0">Điều khiển mô phỏng&lt;/h5>
+        &lt;/div>
+        &lt;div class="card-body">
+        &lt;!-- Hiển thị thông số -->
+        &lt;div class="mb-3">...&lt;/div>
+
+        &lt;!-- Điều khiển tham số mô phỏng -->
+        &lt;div class="mb-3">...&lt;/div>
+
+        &lt;div class="d-grid gap-2">
+        &lt;button id="start-button" class="btn btn-primary">...&lt;/button>
+        &lt;button id="reset-button" class="btn btn-secondary">...&lt;/button>
+        &lt;/div>
+        &lt;/div>
+        &lt;/div>
+        &lt;/div>
+        &lt;/div>
+        &lt;/div>
+
+        &lt;!-- JavaScript -->
+        &lt;script src="https://code.jquery.com/jquery-3.6.0.min.js">&lt;/script>
+        &lt;script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js">&lt;/script>
+        &lt;script>
+        // JavaScript cho mô phỏng
+        &lt;/script>
+        &lt;/body>
+        &lt;/html></div>
+
+    <h3 id="mo-dun-javascript">3.4. Mô-đun JavaScript</h3>
+    <p>Mã JavaScript trong dự án được tổ chức theo mô hình module, với các thành phần chính sau:</p>
+
+    <h4 id="module-animation">3.4.1. Module Animation</h4>
+    <p>Quản lý vòng lặp animation và tính toán thời gian:</p>
+    <div class="code-block">/**
+        * Module quản lý vòng lặp animation
+        */
+        const AnimationModule = (function() {
+        // Private variables
+        let animationId = null;
+        let startTime = 0;
+        let isAnimating = false;
+        let timeToCompleteAnimation = 3000;
+
+        // Callbacks
+        let updateCallback = null;
+        let completeCallback = null;
+
+        /**
+        * Khởi tạo module animation
+        */
+        function init(options = {}) {
+        if (options.duration) timeToCompleteAnimation = options.duration;
+        if (options.updateFn) updateCallback = options.updateFn;
+        if (options.completeFn) completeCallback = options.completeFn;
+        }
+
+        /**
+        * Bắt đầu animation loop
+        */
+        function start() {
+        if (isAnimating) return;
+
+        isAnimating = true;
+        startTime = performance.now();
+        animationId = requestAnimationFrame(animateFrame);
+        }
+
+        /**
+        * Xử lý mỗi frame của animation
+        */
+        function animateFrame(timestamp) {
+        const elapsedTime = timestamp - startTime;
+        const progress = Math.min(elapsedTime / timeToCompleteAnimation, 1);
+
+        if (progress < 1) { if (typeof updateCallback==='function' ) { updateCallback(progress, elapsedTime); }
+            animationId=requestAnimationFrame(animateFrame); } else { isAnimating=false; if (typeof
+            updateCallback==='function' ) { updateCallback(1, timeToCompleteAnimation); } if (typeof
+            completeCallback==='function' ) { completeCallback(false); } } } // Public API return { init: init, start:
+            start, stop: stop, reset: reset, setDuration: setDuration, isRunning: isRunning }; })();</div>
+
+            <h4 id="module-vehicle">3.4.2. Module Vehicle</h4>
+            <p>Quản lý các đối tượng phương tiện trên đường:</p>
+            <div class="code-block">/**
+                * Module quản lý phương tiện
+                */
+                const VehicleModule = (function() {
+                // Private variables
+                let vehicleSpeed = 50; // km/h
+                let vehicleLength = 3; // m
+                let $vehicle = null; // jQuery object
+                let roadWidth = 0;
+                let pixelsPerMeter = 0;
+
+                // Vị trí và trạng thái
+                const vehicleState = {
+                position: 0,
+                startX: 0,
+                endX: 0,
+                isMoving: false
+                };
+
+                // Callbacks
+                let positionCallback = null;
+
+                /**
+                * Khởi tạo module
+                */
+                function init(options = {}) {
+                $vehicle = $('#vehicle');
+                roadWidth = $('.road').width();
+                pixelsPerMeter = roadWidth / 25; // Giả sử đường dài 25m
+
+                if (options.speed) vehicleSpeed = options.speed;
+                if (options.length) vehicleLength = options.length;
+                if (options.onPositionChange) positionCallback = options.onPositionChange;
+
+                vehicleState.startX = 0;
+                vehicleState.endX = roadWidth;
+
+                updateVehicleSize();
+                }
+
+                /**
+                * Cập nhật vị trí xe dựa trên tiến độ animation
+                */
+                function updatePosition(progress) {
+                const totalDistance = vehicleState.endX - vehicleState.startX;
+                const newPosition = vehicleState.startX + (progress * totalDistance);
+
+                $vehicle.css('left', newPosition + 'px');
+                vehicleState.position = newPosition;
+
+                if (typeof positionCallback === 'function') {
+                positionCallback(newPosition, getVehicleBounds());
+                }
+                }
+
+                // Public API
+                return {
+                init: init,
+                reset: reset,
+                updatePosition: updatePosition,
+                getVehicleBounds: getVehicleBounds,
+                setSpeed: setSpeed,
+                setLength: setLength,
+                getSpeedInMPS: getSpeedInMPS,
+                getLength: getLength
+                };
+                })();</div>
+
+            <h4 id="module-sensor">3.4.3. Module Sensor</h4>
+            <p>Quản lý vòng từ và phát hiện phương tiện đi qua:</p>
+            <div class="code-block">/**
+                * Module quản lý vòng từ
+                */
+                const SensorModule = (function() {
+                // Private variables
+                let isActive = false;
+                let loopWidth = 2; // độ rộng vòng từ (m)
+                let loopPosition = 0;
+                let loopSensorWidth = 0;
+                let $loopSensor = null;
+
+                /**
+                * Khởi tạo module
+                */
+                function init(options = {}) {
+                $loopSensor = $('.loop-sensor');
+
+                if (options.loopWidth) loopWidth = options.loopWidth;
+                if (options.position) loopPosition = options.position;
+                if (options.width) loopSensorWidth = options.width;
+                }
+
+                /**
+                * Kích hoạt vòng từ khi phát hiện xe
+                */
+                function activate() {
+                if (!isActive) {
+                isActive = true;
+                $loopSensor.addClass('active');
+                }
+                }
+
+                /**
+                * Tắt vòng từ khi xe rời đi
+                */
+                function deactivate() {
+                if (isActive) {
+                isActive = false;
+                $loopSensor.removeClass('active');
+                }
+                }
+
+                // Public API
+                return {
+                init: init,
+                activate: activate,
+                deactivate: deactivate,
+                getLoopWidth: getLoopWidth,
+                setLoopWidth: setLoopWidth
+                };
+                })();</div>
+
+            <h4 id="module-data">3.4.4. Module Data</h4>
+            <p>Xử lý dữ liệu và thực hiện các tính toán đo lường:</p>
+            <div class="code-block">/**
+                * Module xử lý dữ liệu
+                */
+                const DataModule = (function() {
+                // Lưu trữ dữ liệu
+                let detectionLog = [];
+
+                /**
+                * Khởi tạo module
+                */
+                function init() {
+                detectionLog = [];
+                }
+
+                /**
+                * Tính tốc độ từ vòng từ đơn
+                */
+                function calculateSpeedSingleLoop(vehicleLength, loopWidth, occupancyTime) {
+                // v = (L + D) / T
+                return (vehicleLength + loopWidth) / occupancyTime;
+                }
+
+                /**
+                * Tính tốc độ từ vòng từ kép
+                */
+                function calculateSpeedDoubleLoop(loopDistance, time1, time2) {
+                // v = S / (T₂ - T₁)
+                return loopDistance / (time2 - time1);
+                }
+
+                /**
+                * Ghi lại dữ liệu phát hiện
+                */
+                function logDetection(data) {
+                detectionLog.push({
+                timestamp: new Date(),
+                ...data
+                });
+                }
+
+                // Public API
+                return {
+                init: init,
+                calculateSpeedSingleLoop: calculateSpeedSingleLoop,
+                calculateSpeedDoubleLoop: calculateSpeedDoubleLoop,
+                logDetection: logDetection,
+                getDetectionLog: function() { return detectionLog; }
+                };
+                })();</div>
+
+            <h3 id="co-chieu-tuong-tac-chinh">3.5. Cơ chế tương tác chính</h3>
+            <p>Trung tâm của mô phỏng là quá trình phát hiện xe đi qua vòng từ, được xử lý trong hàm
+                <code>checkLoopInteraction</code>:
+            </p>
+
+            <div class="code-block">// Kiểm tra tương tác với vòng từ
+                function checkLoopInteraction(position, vehicleBounds) {
+                const vehicleLeft = vehicleBounds.left;
+                const vehicleRight = vehicleBounds.right;
+
+                // Phát hiện khi xe bắt đầu vào vòng từ
+                if (!loopEntryTime && vehicleRight >= $loopX && vehicleLeft < $loopX) { loopEntryTime=currentTime;
+                    $loopEntryMarker.css('left', $loopX + 'px' ).show(); $loopEntryValue.css('left', $loopX + 'px' )
+                    .text(loopEntryTime.toFixed(2) + 's' ) .show(); // Kích hoạt cảm biến SensorModule.activate(); } //
+                    Phát hiện khi xe hoàn toàn rời khỏi vòng từ if (!loopExitTime && loopEntryTime && vehicleLeft>
+                    $loopEndX) {
+                    loopExitTime = currentTime;
+                    $loopExitMarker.css('left', $loopEndX + 'px').show();
+                    $loopExitValue.css('left', $loopEndX + 'px')
+                    .text(loopExitTime.toFixed(2) + 's')
+                    .show();
+
+                    // Tính thời gian chiếm dụng
+                    const occupancyTime = loopExitTime - loopEntryTime;
+                    $('#time-value').text(occupancyTime.toFixed(3) + ' giây');
+
+                    // Hiển thị đánh dấu thời gian chiếm dụng
+                    $occupancyMarker.css({
+                    'left': $loopX + 'px',
+                    'width': ($loopEndX - $loopX) + 'px'
+                    }).show();
+
+                    $occupancyLabel.css('left', ($loopX + ($loopEndX - $loopX) / 2 - 60) + 'px')
+                    .text('Chiếm dụng: ' + occupancyTime.toFixed(2) + 's')
+                    .show();
+
+                    // Tắt cảm biến
+                    SensorModule.deactivate();
+
+                    // Lưu dữ liệu
+                    DataModule.logDetection({
+                    entryTime: loopEntryTime,
+                    exitTime: loopExitTime,
+                    occupancy: occupancyTime,
+                    speed: VehicleModule.getSpeedInMPS() * 3.6, // Chuyển về km/h
+                    length: VehicleModule.getLength()
+                    });
+                    }
+
+                    // Cập nhật trạng thái tín hiệu xung khi xe đang ở trên vòng từ
+                    if ((vehicleRight >= $loopX && vehicleLeft < $loopEndX) || (vehicleLeft <=$loopEndX && vehicleRight>
+                        $loopX)) {
+                        // Hiển thị xung cao
+                        $pulseHigh.css({
+                        'height': '50px',
+                        'top': '170px'
+                        });
+                        } else {
+                        // Hiển thị xung thấp
+                        $pulseHigh.css({
+                        'height': '0px',
+                        'top': '220px'
+                        });
+                        }
+                        }</div>
+
+            <h3 id="luong-dieu-khien-chinh">3.6. Luồng điều khiển chính</h3>
+            <p>Quy trình hoạt động chính của mô phỏng được điều khiển từ hàm <code>initializeApp</code>:</p>
+
+            <div class="code-block">// Khởi tạo ứng dụng
+                function initializeApp() {
+                // Tạo các phần tử UI động
+                createRoadMarkings();
+
+                // Khởi tạo các module
+                initializeModules();
+
+                // Thiết lập xử lý sự kiện
+                setupEventHandlers();
+
+                // Đặt trạng thái ban đầu
+                resetSimulation();
+
+                console.log('Application initialized');
+                }
+
+                // Khởi tạo các module riêng biệt
+                function initializeModules() {
+                // Khởi tạo module Vehicle
+                VehicleModule.init({
+                speed: 50,
+                length: 3,
+                onPositionChange: checkLoopInteraction
+                });
+
+                // Khởi tạo module Animation
+                AnimationModule.init({
+                duration: calculateAnimationDuration(),
+                updateFn: updateSimulation,
+                completeFn: onAnimationComplete
+                });
+
+                // Khởi tạo module Sensor
+                SensorModule.init({
+                loopWidth: 2,
+                position: $loopX,
+                width: $loopWidth
+                });
+
+                // Khởi tạo module Data
+                DataModule.init();
+                }</div>
+
+            <h3 id="su-khac-biet-giua-cac-loai-mo-phong">3.7. Sự khác biệt giữa các loại mô phỏng</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Mô phỏng</th>
+                        <th>Điểm chính</th>
+                        <th>Thuật toán cốt lõi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Vòng từ đơn</td>
+                        <td>Sử dụng một vòng từ đơn</td>
+                        <td>v = (L + D) / T</td>
+                    </tr>
+                    <tr>
+                        <td>Vòng từ kép</td>
+                        <td>Sử dụng hai vòng từ</td>
+                        <td>v = S / (T₂ - T₁)</td>
+                    </tr>
+                    <tr>
+                        <td>Quan sát tĩnh</td>
+                        <td>Góc nhìn cố định, nhiều xe</td>
+                        <td>Kết hợp xử lý nhiều tín hiệu</td>
+                    </tr>
+                    <tr>
+                        <td>Quan sát động</td>
+                        <td>Góc nhìn di chuyển</td>
+                        <td>Hiệu ứng Doppler và parallax</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2 id="trien-khai-chi-tiet">4. TRIỂN KHAI CHI TIẾT</h2>
+            <div class="note">
+                <p><strong>Quan trọng:</strong> Phần này hướng dẫn chi tiết cách triển khai code để xây dựng mô phỏng
+                    vòng từ
+                    giao thông. Bạn nên hiểu rõ các khái niệm cơ bản về JavaScript và jQuery trước khi tiếp tục.</p>
+            </div>
+
+            <h3 id="thuat-toan-phat-hien-vong-tu">4.1. Thuật toán phát hiện vòng từ</h3>
+            <h4>Thuật toán phát hiện xe đi qua vòng từ</h4>
+            <ol>
+                <li><strong>Phát hiện xe đi vào vòng từ:</strong> Khi cạnh phải của xe (vehicleRight) vừa chạm vào cạnh
+                    trái của
+                    vòng từ (loopX).</li>
+                <li><strong>Phát hiện xe ra khỏi vòng từ:</strong> Khi cạnh trái của xe (vehicleLeft) vừa ra khỏi cạnh
+                    phải của
+                    vòng từ (loopEndX).</li>
+                <li><strong>Tính thời gian chiếm dụng:</strong> Là hiệu của thời điểm xe ra khỏi vòng từ và thời điểm xe
+                    đi vào
+                    vòng từ.</li>
+                <li><strong>Ước tính tốc độ (vòng từ đơn):</strong> Sử dụng công thức v = (L + D) / T, trong đó:
+                    <ul>
+                        <li>v: Tốc độ xe (m/s)</li>
+                        <li>L: Chiều dài xe (m)</li>
+                        <li>D: Độ rộng vòng từ (m)</li>
+                        <li>T: Thời gian chiếm dụng (s)</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <h2 id="huong-dan-tung-buoc">5. HƯỚNG DẪN TỪNG BƯỚC</h2>
+            <h3 id="cai-dat-va-khong-chay">5.1. Cài đặt và khởi chạy</h3>
+            <ol>
+                <li>
+                    <strong>Clone repository</strong>
+                    <p>Tải mã nguồn về máy tính của bạn:</p>
+                    <div class="code-block">git clone https://github.com/your-username/traffic-loop-simulation.git
+                        cd traffic-loop-simulation</div>
+                </li>
+                <li>
+                    <strong>Cài đặt các phụ thuộc (nếu có)</strong>
+                    <p>Mô phỏng sử dụng CDN cho các thư viện nên không cần cài đặt thêm.</p>
+                </li>
+                <li>
+                    <strong>Mở ứng dụng</strong>
+                    <p>Mở file HTML tương ứng với mô phỏng muốn chạy:</p>
+                    <ul>
+                        <li><code>single_loop.html</code> - Mô phỏng vòng từ đơn</li>
+                        <li><code>double_loop.html</code> - Mô phỏng vòng từ kép</li>
+                        <li><code>stationary_observer.html</code> - Mô phỏng quan sát tĩnh</li>
+                        <li><code>moving_observer.html</code> - Mô phỏng quan sát động</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <h3 id="cac-tham-so-dieu-chinh">5.2. Các tham số điều chỉnh</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tham số</th>
+                        <th>Phạm vi</th>
+                        <th>Mô tả</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Tốc độ xe</td>
+                        <td>10 - 100 km/h</td>
+                        <td>Điều chỉnh tốc độ của phương tiện đi qua vòng từ</td>
+                    </tr>
+                    <tr>
+                        <td>Chiều dài xe</td>
+                        <td>2 - 10 m</td>
+                        <td>Điều chỉnh chiều dài của phương tiện</td>
+                    </tr>
+                    <tr>
+                        <td>Độ rộng vòng từ</td>
+                        <td>1 - 3 m</td>
+                        <td>Điều chỉnh kích thước của vòng từ (một số mô phỏng)</td>
+                    </tr>
+                    <tr>
+                        <td>Khoảng cách vòng từ</td>
+                        <td>2 - 10 m</td>
+                        <td>Điều chỉnh khoảng cách giữa các vòng từ (vòng từ kép)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2 id="cach-export-de-dua-vao-slide">6. CÁCH EXPORT ĐỂ ĐƯA VÀO SLIDE</h2>
+            <h3 id="quay-video">6.1. Quay video</h3>
+            <p>Công cụ đề xuất:</p>
+            <ul>
+                <li><strong>Windows:</strong> OBS Studio (Miễn phí, chất lượng cao)</li>
+                <li><strong>Mac:</strong> QuickTime Player (Có sẵn, dễ sử dụng)</li>
+                <li><strong>Web:</strong> Loom, Screencastify (Dễ chia sẻ, lưu trữ online)</li>
+            </ul>
+
+            <h3 id="nhung-voi-iframe">6.2. Nhúng với iframe</h3>
+            <p>Các bước thực hiện:</p>
+            <ol>
+                <li>Tải mô phỏng lên máy chủ web</li>
+                <li>Sử dụng thẻ iframe để nhúng vào slide</li>
+            </ol>
+
+            <div class="code-block">&lt;iframe
+                src="https://your-domain.com/simulation/single_loop.html"
+                width="800"
+                height="500"
+                frameborder="0"
+                allowfullscreen>
+                &lt;/iframe></div>
+
+            <h2 id="tips-tricks">7. TIPS & TRICKS</h2>
+            <h3 id="toi-uu-hieu-nang">7.1. Tối ưu hiệu năng</h3>
+            <ul>
+                <li>
+                    <strong>Sử dụng requestAnimationFrame thay vì setInterval</strong>
+                    <div class="code-block">// Thay vì:
+                        setInterval(updateAnimation, 16);
+
+                        // Nên dùng:
+                        function animate() {
+                        updateAnimation();
+                        requestAnimationFrame(animate);
+                        }
+                        requestAnimationFrame(animate);</div>
+                </li>
+                <li>
+                    <strong>Tránh reflow và repaint không cần thiết</strong>
+                    <div class="code-block">// Thay vì:
+                        for (let i = 0; i < 100; i++) { element.style.left=i + 'px' ; } // Nên dùng:
+                            element.style.transform='translateX(100px)' ;</div>
+                </li>
+            </ul>
+
+            <div class="footer">
+
+            </div>
+    </div>
+    </div>
+</body>
+
+</html>

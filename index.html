@@ -12,20 +12,100 @@
     <style>
         body {
             background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Header styles */
+        .site-header {
+            background: linear-gradient(135deg, #0061f2 0%, #00ba9d 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .navbar-custom {
+            padding: 0.5rem 1rem;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: white !important;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.9) !important;
+            font-weight: 500;
+            margin: 0 10px;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover {
+            color: white !important;
+            transform: translateY(-2px);
+        }
+
+        .hero-section {
+            background-image: linear-gradient(rgba(0, 97, 242, 0.8), rgba(0, 186, 157, 0.8)), url('https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            padding: 5rem 0;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            font-weight: 300;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .wave-shape {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            overflow: hidden;
+            line-height: 0;
+        }
+
+        .wave-shape svg {
+            position: relative;
+            display: block;
+            width: calc(100% + 1.3px);
+            height: 70px;
+        }
+
+        .wave-shape .shape-fill {
+            fill: #f8f9fa;
         }
 
         .card {
             transition: transform 0.3s, box-shadow 0.3s;
             margin-bottom: 20px;
+            border: none;
+            border-radius: 0.75rem;
+            overflow: hidden;
         }
 
         .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
         }
 
         .card-header {
             font-weight: bold;
+            border-radius: 0.75rem 0.75rem 0 0 !important;
+            padding: 0.75rem 1.25rem;
         }
 
         .card-img-top {
@@ -39,14 +119,131 @@
             color: #20c997;
             text-align: center;
             margin: 20px 0;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover .icon-container {
+            transform: scale(1.1);
+        }
+
+        .btn-outline-primary,
+        .btn-outline-success,
+        .btn-outline-info,
+        .btn-outline-warning,
+        .btn-outline-dark {
+            border-width: 2px;
+            font-weight: 500;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            transition: all 0.3s;
+        }
+
+        .btn-outline-primary:hover,
+        .btn-outline-success:hover,
+        .btn-outline-info:hover,
+        .btn-outline-warning:hover,
+        .btn-outline-dark:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        footer {
+            background-color: #f1f5f9;
+            border-top: 1px solid #e9ecef;
+            padding-top: 2rem;
+            margin-top: 3rem !important;
+            border-radius: 1rem 1rem 0 0;
+        }
+
+        .footer-info p {
+            transition: all 0.3s;
+        }
+
+        .footer-info p:hover {
+            transform: translateX(5px);
+        }
+
+        .footer-info a {
+            color: #0061f2;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .footer-info a:hover {
+            color: #00ba9d;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+
+            .hero-section {
+                padding: 3rem 0;
+            }
         }
     </style>
 </head>
 
 <body>
-    <div class="container py-5">
-        <h1 class="text-center mb-2">Mô phỏng kỹ thuật giao thông</h1>
-        <h4 class="text-center text-muted mb-5">Các phương pháp đo lường và thu thập dữ liệu giao thông</h4>
+    <!-- Header -->
+    <header class="site-header">
+        <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+            <div class="container">
+                <a class="navbar-brand" href="#">
+                    <i class="fas fa-traffic-light me-2"></i>Traffic Simulation
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#"><i class="fas fa-home me-1"></i>Trang chủ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#simulations"><i class="fas fa-laptop-code me-1"></i>Mô phỏng</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#docs"><i class="fas fa-book me-1"></i>Tài liệu</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#about"><i class="fas fa-user me-1"></i>Đình Thành Info</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <h1 class="hero-title text-white">Mô phỏng kỹ thuật giao thông</h1>
+            <h4 class="hero-subtitle text-white">Các phương pháp đo lường và thu thập dữ liệu giao thông</h4>
+            <a href="#simulations" class="btn btn-light btn-lg px-4 shadow-sm">
+                <i class="fas fa-play me-2"></i>Bắt đầu khám phá
+            </a>
+        </div>
+        <div class="wave-shape">
+            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120"
+                preserveAspectRatio="none">
+                <path
+                    d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"
+                    class="shape-fill"></path>
+            </svg>
+        </div>
+    </section>
+
+    <div class="container py-5" id="simulations">
+        <h2 class="text-center mb-4 fw-bold">Khám phá các mô phỏng</h2>
+        <p class="text-center text-muted mb-5">Hiểu rõ các phương pháp đo lường giao thông thông qua mô phỏng trực quan
+        </p>
 
         <div class="row">
             <!-- Mô phỏng vòng từ đơn -->
@@ -124,30 +321,54 @@
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Tài liệu -->
-            <div class="col-12 mt-4">
-                <div class="card shadow">
-                    <div class="card-header bg-dark text-white">
-                        Tài liệu và hướng dẫn
-                    </div>
-                    <div class="card-body d-flex align-items-center">
-                        <i class="fas fa-book me-4" style="font-size: 2.5rem; color: #20c997;"></i>
-                        <div>
-                            <h5 class="card-title">Tài liệu hướng dẫn</h5>
-                            <p class="card-text">Tài liệu và hướng dẫn sử dụng các mô phỏng, bao gồm thông tin kỹ thuật
-                                và giải thích phương pháp.</p>
-                            <a href="README.md" class="btn btn-outline-dark">Xem tài liệu</a>
-                        </div>
+        <!-- Tài liệu -->
+        <div class="col-12 mt-4" id="docs">
+            <div class="card shadow">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="fas fa-book me-2"></i>Tài liệu và hướng dẫn</h5>
+                </div>
+                <div class="card-body d-flex align-items-center">
+                    <i class="fas fa-book me-4" style="font-size: 2.5rem; color: #20c997;"></i>
+                    <div>
+                        <h5 class="card-title">Tài liệu hướng dẫn</h5>
+                        <p class="card-text">Tài liệu và hướng dẫn sử dụng các mô phỏng, bao gồm thông tin kỹ thuật
+                            và giải thích phương pháp.</p>
+                        <a target="_blank" href="tailieu.html" class="btn btn-outline-dark">Xem tài liệu</a>
                     </div>
                 </div>
             </div>
         </div>
-
-        <footer class="mt-5 text-center text-muted">
-            <p>© 2024 Mô phỏng kỹ thuật giao thông - Phát triển với Bootstrap và JavaScript</p>
-        </footer>
     </div>
+
+    <footer class="mt-5 text-center text-muted" id="about">
+        <div class="container py-4">
+            <h3 class="mb-4">Về tác giả</h3>
+            <div class="row justify-content-center">
+                <div class="col-md-6 footer-info">
+                    <div class="bg-white p-4 shadow-sm rounded-3 mb-4">
+                        <img src="https://ui-avatars.com/api/?name=Trinh+Dinh+Thanh&background=0061f2&color=fff&size=128"
+                            alt="Trịnh Đình Thành" class="rounded-circle mb-3"
+                            style="width: 100px; height: 100px; object-fit: cover;">
+                        <h4>Trịnh Đình Thành</h4>
+                        <p class="text-muted mb-1">Lớp CN22E</p>
+                        <p class="mb-3">Phát triển mô phỏng giao thông sử dụng JavaScript và Bootstrap</p>
+                        <div class="d-flex justify-content-center">
+                            <a href="mailto:tdthanh.dev2025@gmail.com" class="btn btn-outline-primary btn-sm mx-1">
+                                <i class="fas fa-envelope me-1"></i>Email
+                            </a>
+                            <a href="https://tiktok.com/@tgrey.hoc.it" target="_blank"
+                                class="btn btn-outline-dark btn-sm mx-1">
+                                <i class="fab fa-tiktok me-1"></i>TikTok
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p>© 2024 Mô phỏng kỹ thuật giao thông - Phát triển với Bootstrap và JavaScript</p>
+        </div>
+    </footer>
 
     <!-- jQuery và Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
