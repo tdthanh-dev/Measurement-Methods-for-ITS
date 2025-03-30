@@ -323,6 +323,12 @@
         <li>Biểu tượng phương tiện (car, truck)</li>
         <li>Biểu tượng điều khiển (play, pause, reset)</li>
     </ul>
+    <h4>Chart.js (Có trong slide thuyết trình, nhưng chưa triển khai trong mô phỏng)</h4>
+    <ul>
+        <li>Biểu đồ thống kê</li>
+        <li>Mật độ giao thông</li>
+        <li>Tốc độ phương tiện</li>
+    </ul>
 
     <h3>2.3. API và kỹ thuật cần nắm vững</h3>
     <table>
@@ -402,10 +408,9 @@
                 <td>Mô phỏng hoạt động của vòng từ đơn</td>
                 <td>
                     <ul>
-                        <li>Hiển thị một vòng từ trên đường giao thông</li>
+                        <li>Hiển thị vòng từ đơn</li>
                         <li>Mô phỏng xe di chuyển qua vòng từ</li>
-                        <li>Tính toán thời gian chiếm dụng vòng từ</li>
-                        <li>Ước tính tốc độ dựa trên công thức v = (L + D) / T</li>
+                        <li>Tính toán thời gian chiếm dụng</li>
                     </ul>
                 </td>
             </tr>
@@ -414,34 +419,28 @@
                 <td>Mô phỏng hoạt động của vòng từ kép</td>
                 <td>
                     <ul>
-                        <li>Hiển thị hai vòng từ được đặt cách nhau một khoảng xác định</li>
-                        <li>Tính toán chính xác tốc độ dựa trên khoảng cách giữa hai vòng từ</li>
-                        <li>Đo thời gian xe di chuyển giữa hai vòng từ</li>
-                        <li>Tính tốc độ bằng công thức v = S / (T₂ - T₁)</li>
+                        <li>Hiển thị hai vòng từ</li>
+                        <li>Tính toán tốc độ dựa trên khoảng cách giữa hai vòng từ</li>
                     </ul>
                 </td>
             </tr>
             <tr>
                 <td><code>stationary_observer_bootstrap.html</code></td>
-                <td>Mô phỏng vòng từ với quan sát tĩnh</td>
+                <td>Mô phỏng quan sát tĩnh</td>
                 <td>
                     <ul>
-                        <li>Hiển thị quan sát từ góc nhìn cố định</li>
-                        <li>Cho phép theo dõi nhiều phương tiện cùng lúc</li>
-                        <li>Phân tích mật độ giao thông và chu kỳ đèn tín hiệu</li>
-                        <li>Hỗ trợ hiển thị dữ liệu thống kê</li>
+                        <li>Quan sát từ góc nhìn cố định</li>
+                        <li>Phân tích mật độ giao thông</li>
                     </ul>
                 </td>
             </tr>
             <tr>
                 <td><code>moving_observer_bootstrap.html</code></td>
-                <td>Mô phỏng vòng từ với quan sát động</td>
+                <td>Mô phỏng quan sát động</td>
                 <td>
                     <ul>
-                        <li>Quan sát từ góc nhìn di chuyển theo phương tiện</li>
-                        <li>Hiệu ứng parallax khi di chuyển</li>
-                        <li>Phân tích hiệu Doppler trong việc đo tốc độ</li>
-                        <li>Mô phỏng hiệu ứng thay đổi tần số khi di chuyển</li>
+                        <li>Quan sát từ góc nhìn di chuyển</li>
+                        <li>Hiệu ứng parallax</li>
                     </ul>
                 </td>
             </tr>
