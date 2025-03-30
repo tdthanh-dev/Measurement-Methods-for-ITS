@@ -261,6 +261,220 @@
             z-index: 11;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
         }
+
+        /* CSS cho thiết bị di động */
+        @media (max-width: 767.98px) {
+
+            /* Điều chỉnh container */
+            .container {
+                padding: 10px;
+            }
+
+            /* Điều chỉnh tiêu đề */
+            h1 {
+                font-size: 1.5rem;
+                margin-bottom: 0.5rem;
+            }
+
+            h4 {
+                font-size: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            /* Điều chỉnh khu vực mô phỏng */
+            .simulation-area {
+                height: 350px;
+                /* Giảm chiều cao */
+            }
+
+            /* Điều chỉnh đường và làn đường */
+            .road {
+                height: 200px;
+                top: 60px;
+            }
+
+            .lane-up-fast {
+                height: 45px;
+                top: 62px;
+            }
+
+            .lane-up-slow {
+                height: 45px;
+                top: 112px;
+            }
+
+            .lane-down-fast {
+                height: 45px;
+                top: 163px;
+            }
+
+            .lane-down-slow {
+                height: 45px;
+                top: 213px;
+            }
+
+            .road-divider {
+                top: 157px;
+            }
+
+            .lane-divider-up {
+                top: 108px;
+            }
+
+            .lane-divider-down {
+                top: 208px;
+            }
+
+            /* Điều chỉnh kích thước và vị trí xe */
+            .probe-car {
+                width: 90px;
+                height: 40px;
+                font-size: 12px;
+                top: 80px !important;
+            }
+
+            .car-up,
+            .car-down {
+                width: 60px;
+                height: 30px;
+                font-size: 10px;
+            }
+
+            #car-up-fast-1,
+            #car-up-fast-2 {
+                top: 75px;
+            }
+
+            #car-up-slow-1,
+            #car-up-slow-2 {
+                top: 125px;
+            }
+
+            #car-down-fast-1,
+            #car-down-fast-2 {
+                top: 175px;
+            }
+
+            #car-down-slow-1,
+            #car-down-slow-2 {
+                top: 225px;
+            }
+
+            /* Điều chỉnh timeline */
+            .probe-timeline {
+                width: 90%;
+                left: 5%;
+                top: 300px;
+            }
+
+            .time-marker {
+                height: 8px;
+            }
+
+            .time-label {
+                font-size: 10px;
+                top: 310px;
+            }
+
+            /* Điều chỉnh formula box */
+            .formula-box {
+                max-width: 90%;
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+
+            /* Điều chỉnh nút */
+            #show-formula {
+                bottom: 5px;
+                right: 5px;
+                font-size: 0.75rem;
+                padding: 0.25rem 0.5rem;
+            }
+
+            /* Điều chỉnh card và các container */
+            .card-body {
+                padding: 0.75rem;
+            }
+
+            /* Giảm khoảng cách giữa các card */
+            .mb-4 {
+                margin-bottom: 0.75rem !important;
+            }
+
+            /* Tối ưu hóa animation */
+            @keyframes moveCarUp {
+                0% {
+                    left: 10px;
+                }
+
+                100% {
+                    left: calc(100% - 80px);
+                }
+            }
+
+            @keyframes moveCarDown {
+                0% {
+                    left: calc(100% - 80px);
+                }
+
+                100% {
+                    left: 10px;
+                }
+            }
+
+            /* Thu nhỏ các nút */
+            .btn-sm {
+                padding: 0.2rem 0.4rem;
+                font-size: 0.7rem;
+            }
+
+            /* Hiển thị nút bắt đầu lại trên thiết bị di động */
+            #mobile-restart-button {
+                display: block !important;
+                font-size: 1.2rem;
+                width: 40px;
+                height: 40px;
+                padding: 0.25rem;
+                border-radius: 50%;
+                box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+            }
+        }
+
+        /* CSS cho thiết bị cực nhỏ */
+        @media (max-width: 375px) {
+            .simulation-area {
+                height: 300px;
+            }
+
+            .probe-car {
+                width: 70px;
+                height: 35px;
+                font-size: 10px;
+            }
+
+            .car-up,
+            .car-down {
+                width: 50px;
+                height: 25px;
+                font-size: 9px;
+            }
+
+            /* Thu nhỏ các card thông tin */
+            .card-body.p-2 {
+                padding: 0.5rem !important;
+            }
+
+            /* Thu nhỏ các font chữ trong control panel */
+            .small {
+                font-size: 0.7rem !important;
+            }
+
+            /* Thu nhỏ các nút */
+            .btn-sm {
+                padding: 0.2rem 0.4rem;
+                font-size: 0.7rem;
+            }
+        }
     </style>
 </head>
 
@@ -314,15 +528,19 @@
                         </div>
 
                         <!-- Các xe đi xuống làn nhanh (chiều từ phải sang trái) -->
-                        <div id="car-down-fast-1" class="car-down" style="top: 215px; left: 300px;"><span>B1</span>
+                        <div id="car-down-fast-1" class="car-down" style="top: 215px; left: 300px; visibility: hidden;">
+                            <span>B1</span>
                         </div>
-                        <div id="car-down-fast-2" class="car-down" style="top: 215px; left: 600px;"><span>B2</span>
+                        <div id="car-down-fast-2" class="car-down" style="top: 215px; left: 600px; visibility: hidden;">
+                            <span>B2</span>
                         </div>
 
                         <!-- Các xe đi xuống làn chậm (chiều từ phải sang trái) -->
-                        <div id="car-down-slow-1" class="car-down" style="top: 275px; left: 180px;"><span>B3</span>
+                        <div id="car-down-slow-1" class="car-down" style="top: 275px; left: 180px; visibility: hidden;">
+                            <span>B3</span>
                         </div>
-                        <div id="car-down-slow-2" class="car-down" style="top: 275px; left: 480px;"><span>B4</span>
+                        <div id="car-down-slow-2" class="car-down" style="top: 275px; left: 480px; visibility: hidden;">
+                            <span>B4</span>
                         </div>
 
                         <!-- Biểu đồ dữ liệu thu thập theo thời gian -->
@@ -347,16 +565,11 @@
                         <div class="time-marker" style="left: 750px;"></div>
                         <div class="time-label" style="left: 750px;">25 phút</div>
 
-                        <!-- Đường đi và điểm dữ liệu của xe thăm dò -->
-                        <!-- <div class="probe-path" style="left: 50px; width: 700px;"></div> -->
-
-                        <!-- Các điểm dữ liệu của xe thăm dò -->
-                        <!-- <div class="probe-point" style="left: 50px; top: 330px;"></div>
-                        <div class="probe-point" style="left: 190px; top: 300px;"></div>
-                        <div class="probe-point" style="left: 330px; top: 270px;"></div>
-                        <div class="probe-point" style="left: 470px; top: 300px;"></div>
-                        <div class="probe-point" style="left: 610px; top: 330px;"></div>
-                        <div class="probe-point" style="left: 750px; top: 310px;"></div> -->
+                        <!-- Nút bắt đầu lại trên giao diện điện thoại -->
+                        <button id="mobile-restart-button" class="btn btn-danger position-absolute"
+                            style="top: 10px; right: 10px; display: none; z-index: 10;">
+                            <i class="fas fa-redo-alt"></i>
+                        </button>
 
                         <!-- Công thức tính toán dựa trên xe thăm dò -->
                         <div class="formula-box position-fixed start-50 translate-middle-x"
@@ -404,8 +617,6 @@
                             </div>
                         </div>
                         <div class="mt-2">
-                            <p class="mb-0"><strong>Vạch cam dọc</strong>: Điểm đếm xe khi xe thăm dò di chuyển •
-                            </p>
                             <p class="mb-0"><strong>M<sub>a</sub></strong>: Số xe gặp khi di chuyển cùng chiều •
                                 <strong>M<sub>w</sub></strong>: Số xe gặp khi di chuyển ngược chiều
                             </p>
@@ -684,16 +895,12 @@
                     return;
                 }
 
-                // Kiểm tra để đảm bảo Ma >= Mw
-                if (incomingCount < outgoingCount) {
-                    alert("Số xe đến (Ma) phải lớn hơn hoặc bằng số xe đi (Mw) để đảm bảo tính hợp lý của mô hình!");
-                    outgoingCount = incomingCount;
-                    $('#outgoing-slider').val(outgoingCount);
-                    updateDisplayInfo();
-                    return;
-                }
-
                 isAnimating = true;
+
+                // Cuộn đến khu vực mô phỏng
+                $('html, body').animate({
+                    scrollTop: $('.simulation-area').offset().top - 20
+                }, 500);
 
                 // Đặt lại vị trí tất cả xe
                 resetCarPositions();
@@ -702,6 +909,11 @@
                 setTimeout(function () {
                     // Thiết lập animation cho xe thăm dò (đi lên)
                     const probeAnimationDuration = 15000 / probeCarSpeed * 35; // Tỉ lệ với tốc độ cơ sở 35km/h
+
+                    $probeCar.css({
+                        'animation': 'none',  // Reset animation trước
+                        'left': '25px'      // Đảm bảo vị trí bắt đầu
+                    }).outerHeight(); // Force reflow
 
                     $probeCar.css({
                         'animation': `moveCarUp ${probeAnimationDuration}ms linear forwards`,
@@ -730,9 +942,10 @@
 
                         setTimeout(() => {
                             $car.css({
-                                'visibility': 'visible',
-                                'left': '25px'
-                            });
+                                'animation': 'none',
+                                'left': '25px',
+                                'visibility': 'visible'
+                            }).outerHeight(); // Force reflow
 
                             // Tốc độ luôn chậm hơn xe thăm dò 15-30%
                             const speedFactor = 0.7 + (Math.random() * 0.15); // 70-85% tốc độ xe thăm dò
@@ -753,9 +966,10 @@
 
                         setTimeout(() => {
                             $car.css({
-                                'visibility': 'visible',
-                                'left': '25px'
-                            });
+                                'animation': 'none',
+                                'left': '25px',
+                                'visibility': 'visible'
+                            }).outerHeight(); // Force reflow
 
                             // Điều chỉnh tốc độ cho từng xe cụ thể
                             let speedFactor;
@@ -784,6 +998,12 @@
                     for (let i = 1; i <= fastLaneDown; i++) {
                         const $car = $(`#car-down-fast-${i}`);
 
+                        // Đặt lại animation trước
+                        $car.css({
+                            'animation': 'none',
+                            'visibility': 'hidden'
+                        }).outerHeight(); // Force reflow
+
                         // Tạo tốc độ phù hợp với streamSpeed đã tính
                         // Xe ngược chiều sẽ có tốc độ tương đối với xe thăm dò là v_rel = v_stream + v_obs
                         const relativeSpeed = streamSpeed + probeCarSpeed;
@@ -798,17 +1018,27 @@
                         const startPos = 300 + (i - 1) * (roadWidth / (expectedCarsPerRoad + 1));
                         const delayTime = (i - 1) * 2200;
 
-                        $car.css({
-                            'animation': `moveCarDown ${carDuration}ms linear forwards`,
-                            'animation-delay': `${delayTime}ms`,
-                            'visibility': 'visible',
-                            'left': `${startPos}px`
-                        });
+                        setTimeout(() => {
+                            $car.css({
+                                'visibility': 'visible',
+                                'left': `${startPos}px`
+                            }).outerHeight(); // Force reflow
+
+                            $car.css({
+                                'animation': `moveCarDown ${carDuration}ms linear forwards`
+                            });
+                        }, delayTime);
                     }
 
                     // Hiển thị xe chiều đi xuống làn chậm
                     for (let i = 1; i <= slowLaneDown; i++) {
                         const $car = $(`#car-down-slow-${i}`);
+
+                        // Đặt lại animation trước
+                        $car.css({
+                            'animation': 'none',
+                            'visibility': 'hidden'
+                        }).outerHeight(); // Force reflow
 
                         // Xe đi chậm hơn tốc độ dòng tổng thể
                         const relativeSpeed = streamSpeed + probeCarSpeed;
@@ -819,15 +1049,19 @@
 
                         // Vị trí ban đầu dựa trên mật độ giao thông
                         const roadWidth = $('.road').width();
-                        const startPos = 100 + (i - 1) * (roadWidth / (expectedCarsPerRoad + 1));
+                        const startPos = 180 + (i - 1) * (roadWidth / (expectedCarsPerRoad + 1));
                         const delayTime = (i - 1) * 3000;
 
-                        $car.css({
-                            'animation': `moveCarDown ${carDuration}ms linear forwards`,
-                            'animation-delay': `${delayTime}ms`,
-                            'visibility': 'visible',
-                            'left': `${startPos}px`
-                        });
+                        setTimeout(() => {
+                            $car.css({
+                                'visibility': 'visible',
+                                'left': `${startPos}px`
+                            }).outerHeight(); // Force reflow
+
+                            $car.css({
+                                'animation': `moveCarDown ${carDuration}ms linear forwards`
+                            });
+                        }, delayTime);
                     }
 
                     // Thiết lập kết thúc animation sau khoảng thời gian dài nhất
@@ -838,7 +1072,7 @@
             });
 
             // Đặt lại mô phỏng
-            $('#reset-button').click(function () {
+            $('#reset-button, #mobile-restart-button').click(function () {
                 // Dừng animation đang chạy
                 resetCarPositions();
                 isAnimating = false;
@@ -846,34 +1080,37 @@
 
             // Hàm đặt lại vị trí tất cả xe
             function resetCarPositions() {
+                // Dừng animation đang chạy
+                $probeCar.add('.car-up').add('.car-down').css('animation', 'none');
+
+                // Force reflow để đảm bảo animation được dừng hoàn toàn
+                $probeCar[0].offsetHeight;
+
                 // Đặt lại vị trí xe thăm dò
                 $probeCar.css({
-                    'animation': 'none',
                     'left': '25px',
                     'visibility': 'visible'
                 });
 
                 // Đặt lại vị trí các xe đi lên làn nhanh (ẩn đến khi xe thăm dò di chuyển)
                 $('#car-up-fast-1, #car-up-fast-2').css({
-                    'animation': 'none',
-                    'left': '0px',
+                    'left': '25px',
                     'visibility': 'hidden'
                 });
 
                 // Đặt lại vị trí các xe đi lên làn chậm (ẩn đến khi xe thăm dò di chuyển)
                 $('#car-up-slow-1, #car-up-slow-2').css({
-                    'animation': 'none',
-                    'left': '0px',
+                    'left': '25px',
                     'visibility': 'hidden'
                 });
 
                 // Đặt lại vị trí các xe đi xuống làn nhanh
-                $('#car-down-fast-1').css({ 'animation': 'none', 'left': '300px', 'visibility': 'visible' });
-                $('#car-down-fast-2').css({ 'animation': 'none', 'left': '600px', 'visibility': 'visible' });
+                $('#car-down-fast-1').css({ 'left': '300px', 'visibility': 'hidden' });
+                $('#car-down-fast-2').css({ 'left': '600px', 'visibility': 'hidden' });
 
                 // Đặt lại vị trí các xe đi xuống làn chậm
-                $('#car-down-slow-1').css({ 'animation': 'none', 'left': '100px', 'visibility': 'visible' });
-                $('#car-down-slow-2').css({ 'animation': 'none', 'left': '650px', 'visibility': 'visible' });
+                $('#car-down-slow-1').css({ 'left': '180px', 'visibility': 'hidden' });
+                $('#car-down-slow-2').css({ 'left': '650px', 'visibility': 'hidden' });
             }
 
             // PHẦN 7: KHỞI TẠO BAN ĐẦU
