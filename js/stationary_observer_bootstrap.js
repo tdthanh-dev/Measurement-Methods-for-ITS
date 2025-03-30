@@ -134,7 +134,7 @@ $(document).ready(function () {
 
         // Bắt đầu mô phỏng liên tục
         isAnimating = true;
-        $(this).html('<i class="fas fa-pause me-1"></i>Tạm dừng');
+        $(this).html('<i class="fas fa-pause me-1"></i>Đang chạy ...');
 
         // Cuộn đến khu vực mô phỏng
         $('html, body').animate({
