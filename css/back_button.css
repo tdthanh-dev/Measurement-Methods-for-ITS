@@ -1,0 +1,56 @@
+/* Styling cho nút điều hướng */
+.nav-button {
+    position: fixed;
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #20c997, #0ca678);
+    box-shadow: 0 4px 15px rgba(12, 166, 120, 0.4);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    text-decoration: none;
+    font-size: 24px;
+    transition: all 0.3s ease;
+    border: 3px solid white;
+}
+
+.nav-button:hover {
+    transform: scale(1.1) rotate(10deg);
+    box-shadow: 0 6px 20px rgba(12, 166, 120, 0.6);
+    color: white;
+}
+
+.nav-button .icon-text {
+    position: absolute;
+    width: 120px;
+    background-color: #0ca678;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    opacity: 0;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.nav-button:hover .icon-text {
+    opacity: 1;
+    transform: translateX(0) !important;
+}
+
+/* Vị trí các nút */
+.top-left {
+    top: 30px;
+    left: 30px;
+}
+
+/* Vị trí text hint */
+.top-left .icon-text {
+    left: 75px;
+    transform: translateX(-20px);
+}

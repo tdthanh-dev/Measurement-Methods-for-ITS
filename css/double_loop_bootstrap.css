@@ -1,0 +1,232 @@
+/* Thiết lập nền trang */
+body {
+    background-color: #f8f9fa;
+}
+
+/* Khu vực mô phỏng chính */
+.simulation-area {
+    position: relative;
+    height: 450px;
+    overflow: hidden;
+}
+
+/* Đường giao thông - nơi xe di chuyển */
+.road {
+    position: absolute;
+    width: 100%;
+    height: 100px;
+    background-color: #495057;
+    top: 80px;
+    border-radius: 5px;
+}
+
+/* Vạch kẻ đường - tạo động bằng JavaScript */
+.road-marking {
+    position: absolute;
+    width: 30px;
+    height: 6px;
+    background-color: white;
+    top: 127px;
+}
+
+/* Vòng từ - các cảm biến từ trên đường */
+.loop-sensor {
+    position: absolute;
+    width: 60px;
+    height: 80px;
+    border: 4px solid #fa5252;
+    background-color: rgba(250, 82, 82, 0.2);
+    top: 90px;
+    z-index: 2;
+    border-radius: 10px;
+}
+
+/* Đường kẻ khoảng cách giữa 2 vòng từ */
+.distance-line {
+    position: absolute;
+    height: 3px;
+    background-color: #20c997;
+    top: 70px;
+    z-index: 1;
+}
+
+/* Mũi tên chỉ khoảng cách */
+.distance-arrow {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    top: 68px;
+}
+
+/* Nhãn khoảng cách */
+.distance-label {
+    position: absolute;
+    font-size: 16px;
+    color: #20c997;
+    font-weight: bold;
+    top: 45px;
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.7);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+/* Xe - đối tượng di chuyển qua vòng từ */
+.vehicle {
+    position: absolute;
+    width: 120px;
+    height: 50px;
+    background-color: #4dabf7;
+    border-radius: 8px;
+    top: 105px;
+    left: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    z-index: 4;
+}
+
+/* Bộ đếm thời gian di chuyển cùng xe */
+.moving-timer {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    border-radius: 15px;
+    padding: 4px 12px;
+    top: 70px;
+    left: 45px;
+    z-index: 5;
+}
+
+/* Đánh dấu thời gian tại điểm xe đi qua vòng từ */
+.loop-time-marker {
+    position: absolute;
+    width: 2px;
+    height: 150px;
+    background-color: rgba(250, 82, 82, 0.8);
+    top: 80px;
+    z-index: 1;
+    display: none;
+    /* Ẩn ban đầu, chỉ hiển thị khi xe tương tác */
+}
+
+/* Giá trị thời gian khi xe đi qua vòng từ */
+.loop-time-value {
+    position: absolute;
+    background-color: rgba(250, 82, 82, 0.9);
+    color: white;
+    border-radius: 10px;
+    padding: 4px 8px;
+    font-weight: bold;
+    font-size: 14px;
+    top: 40px;
+    transform: translateX(-50%);
+    z-index: 5;
+    display: none;
+    /* Ẩn ban đầu, chỉ hiển thị khi xe tương tác */
+}
+
+/* Bố cục hàng dữ liệu trong bảng điều khiển */
+.data-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+/* Khung hiển thị công thức vòng từ */
+.formula-box {
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 3px solid #20c997;
+    border-radius: 10px;
+    padding: 15px;
+    line-height: 1.5;
+    font-weight: 500;
+}
+
+/* Màu cho dữ liệu tính toán */
+.calculated {
+    color: #20c997;
+}
+
+/* CSS cho thiết bị di động */
+@media (max-width: 991.98px) {
+
+    /* Điều chỉnh khu vực mô phỏng */
+    .simulation-area {
+        height: 350px;
+        /* Giảm chiều cao trên mobile */
+        margin-bottom: 1rem;
+    }
+
+    /* Thay đổi bố cục cột để bảng điều khiển nằm dưới khu vực mô phỏng */
+    .mobile-controls {
+        order: 2;
+        width: 100%;
+    }
+
+    .mobile-simulation {
+        order: 1;
+        margin-bottom: 1rem;
+        width: 100%;
+    }
+
+    /* Đảm bảo row có flex-direction column trên mobile */
+    .mobile-row {
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Thu nhỏ công thức */
+    .formula-box {
+        padding: 10px;
+        font-size: 0.85rem;
+        max-width: 90%;
+    }
+
+    /* Điều chỉnh kích thước và vị trí của xe */
+    #vehicle {
+        width: 100px;
+        height: 40px;
+        font-size: 14px;
+    }
+
+    /* Điều chỉnh kích thước và vị trí của các marker */
+    .loop-time-value {
+        font-size: 11px;
+        padding: 2px 4px;
+    }
+
+    /* Điều chỉnh các timer */
+    .moving-timer {
+        font-size: 12px;
+        padding: 2px 8px;
+    }
+
+    /* Điều chỉnh kích thước vòng từ */
+    .loop-sensor {
+        width: 50px;
+        height: 70px;
+    }
+
+    /* Điều chỉnh nhãn khoảng cách */
+    .distance-label {
+        font-size: 12px;
+        top: 40px;
+    }
+
+    /* Hiển thị nút bắt đầu lại trên thiết bị di động */
+    #mobile-restart-button {
+        display: block !important;
+        font-size: 1.2rem;
+        width: 40px;
+        height: 40px;
+        padding: 0.25rem;
+        border-radius: 50%;
+        box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+    }
+} 

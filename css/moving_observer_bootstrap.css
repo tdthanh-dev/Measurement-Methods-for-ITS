@@ -1,0 +1,507 @@
+/* Thiết lập nền trang */
+body {
+    background-color: #f8f9fa;
+}
+
+/* Khu vực mô phỏng chính */
+.simulation-area {
+    position: relative;
+    height: 450px;
+    overflow: hidden;
+    background-color: white;
+}
+
+/* Đường giao thông - màu nền xám đại diện cho mặt đường */
+.road {
+    position: absolute;
+    width: 100%;
+    height: 240px;
+    background-color: #495057;
+    top: 80px;
+    border-radius: 5px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Phân cách giữa 2 hướng đường */
+.road-divider {
+    position: absolute;
+    width: 100%;
+    height: 6px;
+    background-color: #ffd43b;
+    top: 197px;
+    z-index: 2;
+}
+
+/* Vạch kẻ phân làn đường đi lên */
+.lane-divider-up {
+    position: absolute;
+    width: 100%;
+    height: 3px;
+    background-color: #fff;
+    top: 138px;
+    z-index: 2;
+    border-style: dashed;
+}
+
+/* Vạch kẻ phân làn đường đi xuống */
+.lane-divider-down {
+    position: absolute;
+    width: 100%;
+    height: 3px;
+    background-color: #fff;
+    top: 255px;
+    z-index: 2;
+    border-style: dashed;
+}
+
+/* Làn đường bên phải - chiều đi lên - làn nhanh */
+.lane-up-fast {
+    position: absolute;
+    width: 100%;
+    height: 55px;
+    top: 82px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 5px 5px 0 0;
+}
+
+/* Làn đường bên phải - chiều đi lên - làn chậm */
+.lane-up-slow {
+    position: absolute;
+    width: 100%;
+    height: 55px;
+    top: 142px;
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Làn đường bên trái - chiều đi xuống - làn nhanh */
+.lane-down-fast {
+    position: absolute;
+    width: 100%;
+    height: 55px;
+    top: 203px;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Làn đường bên trái - chiều đi xuống - làn chậm */
+.lane-down-slow {
+    position: absolute;
+    width: 100%;
+    height: 55px;
+    top: 263px;
+    background-color: rgba(0, 0, 0, 0.15);
+    border-radius: 0 0 5px 5px;
+}
+
+/* Xe thăm dò - xe đo lường (phương tiện màu xanh lá) */
+.probe-car {
+    position: absolute;
+    width: 120px;
+    height: 50px;
+    background-color: #20c997;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    border: 2px solid #0ca678;
+    z-index: 10;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    top: 100px !important;
+    /* Cố định vị trí thẳng giữa làn nhanh đi lên */
+}
+
+/* Xe đi lên (màu xanh dương) */
+.car-up {
+    position: absolute;
+    width: 80px;
+    height: 40px;
+    background-color: transparent;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-weight: bold;
+    z-index: 5;
+}
+
+/* Xe đi xuống (màu cam) */
+.car-down {
+    position: absolute;
+    width: 80px;
+    height: 40px;
+    background-color: transparent;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-weight: bold;
+    z-index: 5;
+}
+
+/* Đoạn đường di chuyển */
+.probe-timeline {
+    position: absolute;
+    width: 700px;
+    height: 2px;
+    background-color: #adb5bd;
+    top: 380px;
+    left: 50px;
+}
+
+/* Đánh dấu thời gian */
+.time-marker {
+    position: absolute;
+    width: 2px;
+    height: 10px;
+    background-color: #495057;
+    top: 375px;
+}
+
+/* Nhãn thời gian */
+.time-label {
+    position: absolute;
+    top: 390px;
+    font-size: 12px;
+    transform: translateX(-50%);
+    white-space: nowrap;
+}
+
+/* Điểm dữ liệu của xe thăm dò */
+.probe-point {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #20c997;
+    border: 2px solid #0ca678;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+}
+
+/* Đường đi của xe thăm dò trong biểu đồ */
+.probe-path {
+    position: absolute;
+    height: 2px;
+    background-color: #20c997;
+    top: 330px;
+}
+
+/* Khung hiển thị công thức và giải thích */
+.formula-box {
+    background-color: rgba(255, 255, 255, 0.95);
+    border: 3px solid #20c997;
+    border-radius: 10px;
+    padding: 15px;
+    line-height: 1.5;
+    font-weight: 500;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Các hàng dữ liệu trong bảng điều khiển */
+.data-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+/* Màu cho giá trị tính toán */
+.calculated {
+    color: #20c997;
+}
+
+/* Animation di chuyển cho xe đi lên (từ trái sang phải) */
+@keyframes moveCarUp {
+    0% {
+        left: 25px;
+    }
+
+    100% {
+        left: calc(100% - 150px);
+    }
+}
+
+/* Animation di chuyển cho xe đi xuống (từ phải sang trái) */
+@keyframes moveCarDown {
+    0% {
+        left: calc(100% - 150px);
+    }
+
+    100% {
+        left: 25px;
+    }
+}
+
+/* Vạch kẻ dọc thể hiện điểm đếm xe */
+.counting-line {
+    position: absolute;
+    width: 3px;
+    height: 240px;
+    background-color: #ff0800;
+    right: 25px;
+    top: -15px;
+    z-index: 11;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+/* CSS cho thiết bị di động */
+@media (max-width: 767.98px) {
+
+    /* Điều chỉnh container */
+    .container {
+        padding: 10px;
+    }
+
+    /* Điều chỉnh tiêu đề */
+    h1 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    h4 {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    /* Điều chỉnh khu vực mô phỏng */
+    .simulation-area {
+        height: 350px;
+        /* Giảm chiều cao */
+    }
+
+    /* Điều chỉnh đường và làn đường */
+    .road {
+        height: 200px;
+        top: 60px;
+    }
+
+    .lane-up-fast {
+        height: 45px;
+        top: 62px;
+    }
+
+    .lane-up-slow {
+        height: 45px;
+        top: 112px;
+    }
+
+    .lane-down-fast {
+        height: 45px;
+        top: 163px;
+    }
+
+    .lane-down-slow {
+        height: 45px;
+        top: 213px;
+    }
+
+    .road-divider {
+        top: 157px;
+    }
+
+    .lane-divider-up {
+        top: 108px;
+    }
+
+    .lane-divider-down {
+        top: 208px;
+    }
+
+    /* Điều chỉnh kích thước và vị trí xe */
+    .probe-car {
+        width: 90px;
+        height: 40px;
+        font-size: 12px;
+        top: 80px !important;
+    }
+
+    .car-up,
+    .car-down {
+        width: 60px;
+        height: 30px;
+        font-size: 10px;
+    }
+
+    #car-up-fast-1,
+    #car-up-fast-2 {
+        top: 75px;
+    }
+
+    #car-up-slow-1,
+    #car-up-slow-2 {
+        top: 125px;
+    }
+
+    #car-down-fast-1,
+    #car-down-fast-2 {
+        top: 175px;
+    }
+
+    #car-down-slow-1,
+    #car-down-slow-2 {
+        top: 225px;
+    }
+
+    /* Điều chỉnh timeline */
+    .probe-timeline {
+        width: 90%;
+        left: 5%;
+        top: 300px;
+    }
+
+    .time-marker {
+        height: 8px;
+    }
+
+    .time-label {
+        font-size: 10px;
+        top: 310px;
+    }
+
+    /* Điều chỉnh formula box */
+    .formula-box {
+        max-width: 90%;
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+
+    /* Điều chỉnh nút */
+    #show-formula {
+        bottom: 5px;
+        right: 5px;
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+
+    /* Điều chỉnh card và các container */
+    .card-body {
+        padding: 0.75rem;
+    }
+
+    /* Giảm khoảng cách giữa các card */
+    .mb-4 {
+        margin-bottom: 0.75rem !important;
+    }
+
+    /* Tối ưu hóa animation */
+    @keyframes moveCarUp {
+        0% {
+            left: 10px;
+        }
+
+        100% {
+            left: calc(100% - 80px);
+        }
+    }
+
+    @keyframes moveCarDown {
+        0% {
+            left: calc(100% - 80px);
+        }
+
+        100% {
+            left: 10px;
+        }
+    }
+
+    /* Thu nhỏ các nút */
+    .btn-sm {
+        padding: 0.2rem 0.4rem;
+        font-size: 0.7rem;
+    }
+
+    /* Hiển thị nút bắt đầu lại trên thiết bị di động */
+    #mobile-restart-button {
+        display: block !important;
+        font-size: 1.2rem;
+        width: 40px;
+        height: 40px;
+        padding: 0.25rem;
+        border-radius: 50%;
+        box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+    }
+}
+
+/* CSS cho thiết bị cực nhỏ */
+@media (max-width: 375px) {
+    .simulation-area {
+        height: 300px;
+    }
+
+    .probe-car {
+        width: 70px;
+        height: 35px;
+        font-size: 10px;
+    }
+
+    .car-up,
+    .car-down {
+        width: 50px;
+        height: 25px;
+        font-size: 9px;
+    }
+
+    /* Thu nhỏ các card thông tin */
+    .card-body.p-2 {
+        padding: 0.5rem !important;
+    }
+
+    /* Thu nhỏ các font chữ trong control panel */
+    .small {
+        font-size: 0.7rem !important;
+    }
+
+    /* Thu nhỏ các nút */
+    .btn-sm {
+        padding: 0.2rem 0.4rem;
+        font-size: 0.7rem;
+    }
+}
+
+/* Different vehicle types */
+.sedan {
+    color: #4dabf7;
+}
+
+.suv {
+    color: #2b8aca;
+}
+
+.motorcycle {
+    color: #5f3dc4;
+}
+
+.truck {
+    color: #fd7e14;
+}
+
+.bus {
+    color: #e67700;
+}
+
+.car-up .fa-icon, .car-down .fa-icon {
+    font-size: 28px;
+    transform-origin: center;
+}
+
+/* Direction-specific transforms */
+.car-up .fa-icon {
+    transform: none; /* Vehicles face right naturally */
+}
+
+.car-down .fa-icon {
+    transform: scaleX(-1); /* Flip horizontally so vehicles face left */
+}
+
+.car-up span, .car-down span {
+    position: absolute;
+    bottom: -18px;
+    font-size: 12px;
+    color: #343a40;
+    background-color: rgba(255, 255, 255, 0.7);
+    padding: 1px 4px;
+    border-radius: 3px;
+} 

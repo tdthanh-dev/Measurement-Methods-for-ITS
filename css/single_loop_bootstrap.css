@@ -1,0 +1,159 @@
+/* Thiết lập nền trang */
+body {
+    background-color: #f8f9fa;
+}
+
+/* Khu vực mô phỏng chính - chiều cao cố định và ẩn phần tràn */
+.simulation-area {
+    position: relative;
+    height: 450px;
+    overflow: hidden;
+}
+
+/* Đường giao thông - nơi xe di chuyển */
+.road {
+    position: absolute;
+    width: 100%;
+    height: 100px;
+    background-color: #495057;
+    top: 80px;
+    border-radius: 5px;
+}
+
+/* Vạch kẻ đường - được tạo động bằng JavaScript */
+.road-marking {
+    position: absolute;
+    width: 30px;
+    height: 6px;
+    background-color: white;
+    top: 127px;
+}
+
+/* Vòng từ - cảm biến đặt trên mặt đường */
+.loop-sensor {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    border: 4px solid #fa5252;
+    background-color: rgba(250, 82, 82, 0.2);
+    top: 90px;
+    left: 50%;
+    transform: translateX(-40px);
+    z-index: 2;
+    border-radius: 10px;
+}
+
+/* Xe - đối tượng di chuyển qua vòng từ */
+.vehicle {
+    position: absolute;
+    height: 50px;
+    background-color: #4dabf7;
+    border-radius: 8px;
+    top: 105px;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-weight: bold;
+    z-index: 4;
+}
+
+/* Đường tín hiệu cơ sở - đường cơ bản của tín hiệu điện */
+.signal-pulse {
+    position: absolute;
+    width: 100%;
+    height: 3px;
+    background-color: #adb5bd;
+    top: 220px;
+}
+
+/* Phần cao của tín hiệu - hiển thị khi xe đi qua vòng từ */
+.pulse-high {
+    position: absolute;
+    width: 80px;
+    height: 0px;
+    background-color: #fa5252;
+    top: 220px;
+    left: 50%;
+    transform: translateX(-40px);
+    transition: height 0.3s;
+}
+
+/* Bộ đếm thời gian di chuyển cùng xe */
+.moving-timer {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    border-radius: 15px;
+    padding: 4px 12px;
+    top: 70px;
+    left: 0;
+    z-index: 5;
+}
+
+/* Đánh dấu thời gian tại điểm vào/ra vòng từ */
+.loop-time-marker {
+    position: absolute;
+    width: 2px;
+    height: 300px;
+    background-color: rgba(250, 82, 82, 0.8);
+    top: 80px;
+    z-index: 1;
+    display: none;
+    /* Ẩn ban đầu, chỉ hiển thị khi xe tương tác */
+}
+
+/* Giá trị thời gian tại điểm vào/ra vòng từ */
+.loop-time-value {
+    position: absolute;
+    background-color: rgba(250, 82, 82, 0.9);
+    color: white;
+    border-radius: 10px;
+    padding: 4px 8px;
+    top: 40px;
+    transform: translateX(-50%);
+    z-index: 5;
+    display: none;
+    /* Ẩn ban đầu, chỉ hiển thị khi xe tương tác */
+}
+
+/* Đánh dấu khoảng thời gian xe chiếm dụng vòng từ */
+.occupancy-marker {
+    position: absolute;
+    height: 5px;
+    background-color: #20c997;
+    top: 260px;
+    z-index: 1;
+    display: none;
+    /* Ẩn ban đầu, chỉ hiển thị khi xe tương tác */
+}
+
+/* Nhãn hiển thị thời gian chiếm dụng */
+.occupancy-label {
+    position: absolute;
+    color: #20c997;
+    top: 240px;
+    background-color: rgba(255, 255, 255, 0.7);
+    padding: 2px 6px;
+    border-radius: 4px;
+    display: none;
+    /* Ẩn ban đầu, chỉ hiển thị khi xe tương tác */
+}
+
+/* Bố cục hàng dữ liệu trong bảng điều khiển */
+.data-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+/* Khung hiển thị công thức vòng từ */
+.formula-box {
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 3px solid #20c997;
+    border-radius: 10px;
+    padding: 15px;
+    line-height: 1.5;
+    font-weight: 500;
+} 

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vòng từ kép - Bootstrap</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/back_button.css">
+    <link rel="stylesheet" href="/css/double_loop_bootstrap.css">
+</head>
+
+<body>
+    <div class="container py-4">
+        <!-- Tiêu đề và mô tả -->
+        <h1 class="text-center mb-2">Nguyên lý hoạt động của vòng từ kép</h1>
+        <h4 class="text-center text-muted mb-4">Đo tốc độ bằng hai vòng từ</h4>
+
+        <div class="row mobile-row">
+            <!-- Khu vực hiển thị mô phỏng - chiếm 8/12 độ rộng trên màn hình lớn -->
+            <div class="col-lg-8 mobile-simulation">
+                <div class="card shadow simulation-area mb-4">
+                    <!-- Đường giao thông -->
+                    <div class="road"></div>
+                    <!-- Vạch kẻ đường - được tạo bằng JavaScript -->
+
+                    <!-- Vòng từ - hai cảm biến đặt cách nhau một khoảng xác định -->
+                    <div id="loop1" class="loop-sensor" style="left: 25%;"></div>
+                    <div id="loop2" class="loop-sensor" style="left: 65%;"></div>
+
+                    <!-- Chỉ thị khoảng cách giữa hai vòng từ -->
+                    <div class="distance-line" style="width: 40%; left: 25%;"></div>
+                    <div class="distance-arrow" style="left: 25%; border-right: 10px solid #20c997;"></div>
+                    <div class="distance-arrow" style="left: 65%; border-left: 10px solid #20c997;"></div>
+                    <div id="distance-label" class="distance-label" style="width: 40%; left: 25%;">Khoảng cách: 5m</div>
+
+                    <!-- Xe di chuyển qua hai vòng từ -->
+                    <div id="vehicle" class="vehicle">
+                        <i class="fas fa-taxi me-2"></i>
+                        <span id="speed-display">50 km/h</span>
+                    </div>
+
+                    <!-- Các phần tử hiển thị thời gian và đánh dấu -->
+                    <div id="moving-timer" class="moving-timer">0.00s</div>
+                    <div id="loop1-time-marker" class="loop-time-marker"></div>
+                    <div id="loop1-time-value" class="loop-time-value"></div>
+                    <div id="loop2-time-marker" class="loop-time-marker"></div>
+                    <div id="loop2-time-value" class="loop-time-value"></div>
+
+                    <!-- Nút bắt đầu lại trên giao diện điện thoại -->
+                    <button id="mobile-restart-button" class="btn btn-danger position-absolute"
+                        style="top: 10px; right: 10px; display: none; z-index: 10;">
+                        <i class="fas fa-redo-alt"></i>
+                    </button>
+
+                    <!-- Công thức tính tốc độ vòng từ kép -->
+                    <div class="formula-box position-absolute bottom-0 start-50 translate-middle-x mb-3 text-center">
+                        Vòng từ kép:<br>
+                        - Công thức đo tốc độ: v = d / Δt<br>
+                        - d: khoảng cách giữa hai vòng từ (m)<br>
+                        - Δt: thời gian di chuyển giữa hai vòng từ (s)
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bảng điều khiển mô phỏng - chiếm 4/12 độ rộng màn hình lớn -->
+            <div class="col-lg-4 mobile-controls">
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-primary text-white text-center py-3">
+                        <h5 class="mb-0">Điều khiển mô phỏng</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Hiển thị thông số đo lường và thiết lập -->
+                        <div class="mb-4">
+                            <div class="data-row">
+                                <span class="fw-bold">Tốc độ thực xe:</span>
+                                <span id="speed-value" class="text-primary fw-bold">50 km/h</span>
+                            </div>
+                            <div class="data-row">
+                                <span class="fw-bold">Khoảng cách giữa vòng từ:</span>
+                                <span id="distance-value" class="text-primary fw-bold">5.0 mét</span>
+                            </div>
+                            <div class="data-row">
+                                <span class="fw-bold">Thời gian qua vòng từ 1:</span>
+                                <span id="time1-value" class="text-primary fw-bold">--</span>
+                            </div>
+                            <div class="data-row">
+                                <span class="fw-bold">Thời gian qua vòng từ 2:</span>
+                                <span id="time2-value" class="text-primary fw-bold">--</span>
+                            </div>
+                            <div class="data-row">
+                                <span class="fw-bold">Thời gian di chuyển (Δt):</span>
+                                <span id="delta-time" class="fw-bold calculated">--</span>
+                            </div>
+                            <div class="data-row">
+                                <span class="fw-bold">Tốc độ tính toán:</span>
+                                <span id="calculated-speed" class="fw-bold calculated">--</span>
+                            </div>
+                        </div>
+
+                        <!-- Điều khiển tham số mô phỏng -->
+                        <div class="mb-3">
+                            <label for="speed-slider" class="form-label fw-bold">Tốc độ xe (20-100 km/h):</label>
+                            <input type="range" class="form-range" id="speed-slider" min="20" max="100" value="50"
+                                step="1">
+                        </div>
+                        <div class="mb-3">
+                            <label for="distance-slider" class="form-label fw-bold">Khoảng cách vòng từ (3-10m):</label>
+                            <input type="range" class="form-range" id="distance-slider" min="3" max="10" value="5"
+                                step="0.5">
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button id="start-button" class="btn btn-primary fw-bold">
+                                <i class="fas fa-play me-2"></i>Bắt đầu
+                            </button>
+                            <button id="stop-button" class="btn btn-danger fw-bold">
+                                <i class="fas fa-stop me-2"></i>Dừng
+                            </button>
+                            <button id="continue-button" class="btn btn-success fw-bold">
+                                <i class="fas fa-play me-2"></i>Tiếp tục
+                            </button>
+                            <button id="reset-button" class="btn btn-secondary fw-bold">
+                                <i class="fas fa-redo-alt me-2"></i>Đặt lại
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nút điều hướng -->
+    <a href="../index.html" class="nav-button top-left" title="Trang chủ">
+        <i class="fas fa-home"></i>
+        <span class="icon-text">Trang chủ</span>
+    </a>
+
+
+    <!-- jQuery và Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../js/double_loop_bootstrap.js"></script>
+</body>
+
+</html>

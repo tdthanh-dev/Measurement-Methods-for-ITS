@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xe thăm dò - Bootstrap</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/moving_observer_bootstrap.css">
+    <link rel="stylesheet" href="/css/back_button.css">
+
+</head>
+
+<body>
+    <div class="container py-4">
+        <!-- Tiêu đề và mô tả -->
+        <h1 class="text-center mb-2">Xe thăm dò trong dòng xe (Moving Observer)</h1>
+        <h4 class="text-center text-muted mb-4">Phương pháp đo lường thông số giao thông bằng xe di chuyển</h4>
+
+        <div class="row">
+            <!-- Khu vực hiển thị mô phỏng - chiếm 8/12 độ rộng trên màn hình lớn -->
+            <div class="col-lg-8">
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Mô phỏng xe thăm dò trong dòng xe</h5>
+                    </div>
+                    <div class="card-body simulation-area">
+                        <!-- Đường giao thông hai chiều với phân làn -->
+                        <div class="road"></div>
+                        <div class="lane-up-fast"></div>
+                        <div class="lane-up-slow"></div>
+                        <div class="lane-down-fast"></div>
+                        <div class="lane-down-slow"></div>
+                        <div class="road-divider"></div>
+                        <div class="lane-divider-up"></div>
+                        <div class="lane-divider-down"></div>
+
+                        <!-- Vạch kẻ đường đứt đoạn được tạo động bằng JavaScript -->
+
+                        <!-- Xe thăm dò - đi cùng chiều với dòng xe đi lên -->
+                        <div id="probe-car" class="probe-car" style="left: 25px;">
+                            <i class="fas fa-car-side me-2"></i>
+                            <span>Xe thăm dò</span>
+                            <div class="counting-line" title="Vạch đếm xe"></div>
+                        </div>
+
+                        <!-- Các xe đi lên làn nhanh (chiều từ trái sang phải) -->
+                        <div id="car-up-fast-1" class="car-up sedan" style="top: 95px; left: 0px; visibility: hidden;">
+                            <i class="fa-icon fas fa-car"></i>
+                            <span>A1</span>
+                        </div>
+                        <div id="car-up-fast-2" class="car-up suv" style="top: 95px; left: 0px; visibility: hidden;">
+                            <i class="fa-icon fas fa-truck-monster"></i>
+                            <span>A2</span>
+                        </div>
+
+                        <!-- Các xe đi lên làn chậm (chiều từ trái sang phải) -->
+                        <div id="car-up-slow-1" class="car-up motorcycle"
+                            style="top: 155px; left: 0px; visibility: hidden;">
+                            <i class="fa-icon fas fa-motorcycle"></i>
+                            <span>A3</span>
+                        </div>
+                        <div id="car-up-slow-2" class="car-up truck" style="top: 155px; left: 0px; visibility: hidden;">
+                            <i class="fa-icon fas fa-truck"></i>
+                            <span>A4</span>
+                        </div>
+
+                        <!-- Các xe đi xuống làn nhanh (chiều từ phải sang trái) -->
+                        <div id="car-down-fast-1" class="car-down sedan"
+                            style="top: 215px; left: 300px; visibility: hidden;">
+                            <i class="fa-icon fas fa-car"></i>
+                            <span>B1</span>
+                        </div>
+                        <div id="car-down-fast-2" class="car-down suv"
+                            style="top: 215px; left: 600px; visibility: hidden;">
+                            <i class="fa-icon fas fa-shuttle-van"></i>
+                            <span>B2</span>
+                        </div>
+
+                        <!-- Các xe đi xuống làn chậm (chiều từ phải sang trái) -->
+                        <div id="car-down-slow-1" class="car-down motorcycle"
+                            style="top: 275px; left: 180px; visibility: hidden;">
+                            <i class="fa-icon fas fa-motorcycle"></i>
+                            <span>B3</span>
+                        </div>
+                        <div id="car-down-slow-2" class="car-down bus"
+                            style="top: 275px; left: 480px; visibility: hidden;">
+                            <i class="fa-icon fas fa-bus"></i>
+                            <span>B4</span>
+                        </div>
+
+                        <!-- Biểu đồ dữ liệu thu thập theo thời gian -->
+                        <div class="probe-timeline"></div>
+
+                        <!-- Đánh dấu và nhãn thời gian -->
+                        <div class="time-marker" style="left: 50px;"></div>
+                        <div class="time-label" style="left: 50px;">0 phút</div>
+
+                        <div class="time-marker" style="left: 190px;"></div>
+                        <div class="time-label" style="left: 190px;">5 phút</div>
+
+                        <div class="time-marker" style="left: 330px;"></div>
+                        <div class="time-label" style="left: 330px;">10 phút</div>
+
+                        <div class="time-marker" style="left: 470px;"></div>
+                        <div class="time-label" style="left: 470px;">15 phút</div>
+
+                        <div class="time-marker" style="left: 610px;"></div>
+                        <div class="time-label" style="left: 610px;">20 phút</div>
+
+                        <div class="time-marker" style="left: 750px;"></div>
+                        <div class="time-label" style="left: 750px;">25 phút</div>
+
+                        <!-- Nút bắt đầu lại trên giao diện điện thoại -->
+                        <button id="mobile-restart-button" class="btn btn-danger position-absolute"
+                            style="top: 10px; right: 10px; display: none; z-index: 10;">
+                            <i class="fas fa-redo-alt"></i>
+                        </button>
+
+                        <!-- Công thức tính toán dựa trên xe thăm dò -->
+                        <div class="formula-box position-fixed start-50 translate-middle-x"
+                            style="top: 50%; transform: translate(-50%, -50%); max-width: 600px; z-index: 1050;">
+                            <button type="button" class="btn-close position-absolute top-0 end-0 m-2" aria-label="Close"
+                                id="close-formula"></button>
+                            <h5 class="text-center mb-3">Phương pháp xe thăm dò (Moving Observer)</h5>
+                            - Công thức tính lưu lượng: q = (M<sub>a</sub> + M<sub>w</sub>) / T<br>
+                            - Công thức tính mật độ: k = (M<sub>a</sub> - M<sub>w</sub>) / (T·v<sub>obs</sub>)<br>
+                            - Công thức tính vận tốc: v = q / k
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chú thích các ký hiệu -->
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0">Chú thích</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-3 mb-2">
+                                <div class="d-flex align-items-center">
+                                    <div
+                                        style="width: 30px; height: 20px; background-color: #20c997; border-radius: 4px; margin-right: 10px;">
+                                    </div>
+                                    <span>Xe thăm dò (cùng chiều)</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <div class="d-flex align-items-center">
+                                    <div
+                                        style="width: 30px; height: 20px; background-color: #4dabf7; border-radius: 4px; margin-right: 10px;">
+                                    </div>
+                                    <span>Xe đi lên - M<sub>a</sub></span>
+                                </div>
+                            </div>
+                            <div class="col-md-5 mb-2">
+                                <div class="d-flex align-items-center">
+                                    <div
+                                        style="width: 30px; height: 20px; background-color: #fd7e14; border-radius: 4px; margin-right: 10px;">
+                                    </div>
+                                    <span>Xe đi xuống - M<sub>w</sub></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <p class="mb-0"><strong>M<sub>a</sub></strong>: Số xe gặp khi di chuyển cùng chiều •
+                                <strong>M<sub>w</sub></strong>: Số xe gặp khi di chuyển ngược chiều
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ô giải thích và thông tin bổ sung -->
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">Giải thích về xe thăm dò</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Xe thăm dò (Probe Vehicle) là phương tiện được trang bị thiết bị GPS hoặc các cảm biến khác
+                            để thu thập
+                            dữ liệu giao thông khi di chuyển trong dòng xe.</p>
+                        <p>Trong mô phỏng này, xe thăm dò di chuyển trên đường hai chiều với mỗi chiều có hai làn đường:
+                            làn nhanh và làn chậm. Điều này phản ánh cấu trúc đường thực tế và cho phép phân tích dòng
+                            xe phức tạp hơn.</p>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><span class="fw-bold text-primary">Ưu điểm của xe thăm dò:</span></p>
+                                <ul>
+                                    <li>Thu thập dữ liệu liên tục theo thời gian và không gian</li>
+                                    <li>Không cần lắp đặt cơ sở hạ tầng cố định như vòng từ</li>
+                                    <li>Cung cấp thông tin về thời gian di chuyển, tốc độ thực tế</li>
+                                    <li>Phát hiện được các sự cố, tắc nghẽn trên đường</li>
+                                    <li>Có thể thu thập dữ liệu từ nhiều làn đường khác nhau</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <p><span class="fw-bold text-danger">Hạn chế:</span></p>
+                                <ul>
+                                    <li>Cần số lượng xe thăm dò đủ lớn để có dữ liệu đại diện</li>
+                                    <li>Độ chính xác phụ thuộc vào thiết bị GPS và tần suất ghi nhận dữ liệu</li>
+                                    <li>Khó đạt được độ phủ hoàn chỉnh trên tất cả các tuyến đường</li>
+                                    <li>Sự khác biệt về tốc độ giữa các làn đường có thể ảnh hưởng đến phép đo</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bảng điều khiển mô phỏng - chiếm 4/12 độ rộng màn hình lớn -->
+            <div class="col-lg-4">
+                <div class="card shadow mb-3">
+                    <div class="card-header bg-primary text-white py-2">
+                        <h5 class="mb-0">Điều khiển mô phỏng</h5>
+                    </div>
+                    <div class="card-body p-2">
+                        <!-- Hiển thị thông số và điều chỉnh tham số -->
+                        <div class="row g-2">
+                            <!-- Thông số đo lường -->
+                            <div class="col-md-6 col-lg-12">
+                                <div class="small">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>Số xe đến (Ma):</span>
+                                        <span id="incoming-count" class="text-primary fw-bold">42 xe</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>Số xe đi (Mw):</span>
+                                        <span id="outgoing-count" class="text-primary fw-bold">18 xe</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>Thời gian (T):</span>
+                                        <span id="observation-time" class="text-primary fw-bold">15 phút</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>Tốc độ xe thăm dò:</span>
+                                        <span id="probe-speed" class="text-primary fw-bold">35 km/h</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Kết quả tính toán -->
+                            <div class="col-md-6 col-lg-12">
+                                <div class="small bg-light p-2 rounded">
+                                    <div class="d-flex justify-content-between">
+                                        <span>Lưu lượng (q):</span>
+                                        <span id="flow-rate" class="fw-bold calculated">4.0 xe/phút</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <span>Mật độ (k):</span>
+                                        <span id="density" class="fw-bold calculated">0.046 xe/km</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <span>Vận tốc dòng xe (v):</span>
+                                        <span id="stream-speed" class="fw-bold calculated">87.0 km/h</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Điều chỉnh tham số -->
+                        <div class="mt-2">
+                            <div class="mb-2">
+                                <label for="incoming-slider" class="form-label small mb-0">Số xe đến (10-60):</label>
+                                <input type="range" class="form-range" id="incoming-slider" min="10" max="60" value="42"
+                                    step="1">
+                            </div>
+                            <div class="mb-2">
+                                <label for="outgoing-slider" class="form-label small mb-0">Số xe đi (5-40):</label>
+                                <input type="range" class="form-range" id="outgoing-slider" min="5" max="40" value="18"
+                                    step="1">
+                            </div>
+                            <div class="mb-2">
+                                <label for="observation-time-slider" class="form-label small mb-0">Thời gian quan sát
+                                    (phút):</label>
+                                <input type="range" class="form-range" id="observation-time-slider" min="5" max="30"
+                                    value="15" step="1">
+                            </div>
+                            <div class="mb-2">
+                                <label for="probe-speed-slider" class="form-label small mb-0">Tốc độ xe thăm dò
+                                    (km/h):</label>
+                                <input type="range" class="form-range" id="probe-speed-slider" min="20" max="60"
+                                    value="35" step="1">
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button id="start-button" class="btn btn-primary btn-sm flex-grow-1">
+                                    <i class="fas fa-play me-1"></i>Bắt đầu
+                                </button>
+
+                                <button id="reset-button" class="btn btn-secondary btn-sm flex-grow-1">
+                                    <i class="fas fa-redo-alt me-1"></i>Đặt lại
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Giải thích công thức -->
+                <div class="card shadow">
+                    <div class="card-header bg-success text-white py-2">
+                        <h5 class="mb-0">Giải thích công thức</h5>
+                    </div>
+                    <div class="card-body p-2 small">
+                        <p class="mb-1"><strong>Ký hiệu:</strong></p>
+                        <ul class="mb-2 ps-3">
+                            <li><strong>M<sub>a</sub></strong>: Số xe gặp đi cùng chiều</li>
+                            <li><strong>M<sub>w</sub></strong>: Số xe gặp đi ngược chiều</li>
+                            <li><strong>T</strong>: Thời gian quan sát (phút)</li>
+                            <li><strong>v<sub>obs</sub></strong>: Tốc độ xe thăm dò (km/h)</li>
+                        </ul>
+                        <p class="mb-0">Phương pháp xe thăm dò sử dụng một xe di chuyển trong dòng giao thông, đếm số
+                            lượng xe mà nó
+                            đến và đi theo cả hai hướng.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nút điều hướng -->
+    <a href="/index.html" class="nav-button top-left" title="Trang chủ">
+        <i class="fas fa-home"></i>
+        <span class="icon-text">Trang chủ</span>
+    </a>
+
+
+
+    <!-- jQuery và Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="/js/moving_observer_bootstrap.js"></script>
+</body>
+
+</html>
