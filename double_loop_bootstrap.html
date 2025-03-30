@@ -525,24 +525,39 @@
                         // Tính vị trí trung tâm xe để so sánh với vị trí vòng từ
                         const vehicleCenter = getVehicleCenter(position);
 
-                        // Kiểm tra nếu tâm xe đi qua vòng từ 1 - phát hiện bằng cách so sánh khoảng cách
-                        if (!loop1Time && Math.abs(vehicleCenter - loop1X - loopWidth / 2) < 5) {
+                        // Tính vị trí mép trước của xe
+                        const vehicleFront = position + vehicleWidth;
+
+                        // Kiểm tra nếu mép trước xe vừa chạm vào mép trái vòng từ 1
+                        if (!loop1Time && Math.abs(vehicleFront - loop1X) < 5) {
                             loop1Time = currentTime;
                             $('#time1-value').text(loop1Time.toFixed(2) + ' giây');
 
                             // Hiển thị đánh dấu thời gian tại vòng từ 1
                             $loop1TimeMarker.css('left', loop1X + 'px').show();
                             $loop1TimeValue.css('left', loop1X + 'px').text(loop1Time.toFixed(2) + 's').show();
+
+                            // Thêm hiệu ứng nhấp nháy khi xe chạm vòng từ
+                            $loop1.css('background-color', 'rgba(250, 82, 82, 0.6)');
+                            setTimeout(function () {
+                                $loop1.css('background-color', 'rgba(250, 82, 82, 0.2)');
+                            }, 300);
                         }
 
-                        // Kiểm tra nếu tâm xe đi qua vòng từ 2
-                        if (!loop2Time && Math.abs(vehicleCenter - loop2X - loopWidth / 2) < 5) {
+                        // Kiểm tra nếu mép trước xe vừa chạm vào mép trái vòng từ 2
+                        if (!loop2Time && Math.abs(vehicleFront - loop2X) < 5) {
                             loop2Time = currentTime;
                             $('#time2-value').text(loop2Time.toFixed(2) + ' giây');
 
                             // Hiển thị đánh dấu thời gian tại vòng từ 2
                             $loop2TimeMarker.css('left', loop2X + 'px').show();
                             $loop2TimeValue.css('left', loop2X + 'px').text(loop2Time.toFixed(2) + 's').show();
+
+                            // Thêm hiệu ứng nhấp nháy khi xe chạm vòng từ
+                            $loop2.css('background-color', 'rgba(250, 82, 82, 0.6)');
+                            setTimeout(function () {
+                                $loop2.css('background-color', 'rgba(250, 82, 82, 0.2)');
+                            }, 300);
 
                             // PHẦN 12C: TÍNH TOÁN TỐC ĐỘ DỰA TRÊN KHOẢNG CÁCH VÀ THỜI GIAN
                             // Tính toán thời gian di chuyển và tốc độ
@@ -633,24 +648,39 @@
                         // Tính vị trí trung tâm xe để so sánh với vị trí vòng từ
                         const vehicleCenter = getVehicleCenter(position);
 
-                        // Kiểm tra nếu tâm xe đi qua vòng từ 1 - phát hiện bằng cách so sánh khoảng cách
-                        if (!loop1Time && Math.abs(vehicleCenter - loop1X - loopWidth / 2) < 5) {
+                        // Tính vị trí mép trước của xe
+                        const vehicleFront = position + vehicleWidth;
+
+                        // Kiểm tra nếu mép trước xe vừa chạm vào mép trái vòng từ 1
+                        if (!loop1Time && Math.abs(vehicleFront - loop1X) < 5) {
                             loop1Time = currentTime;
                             $('#time1-value').text(loop1Time.toFixed(2) + ' giây');
 
                             // Hiển thị đánh dấu thời gian tại vòng từ 1
                             $loop1TimeMarker.css('left', loop1X + 'px').show();
                             $loop1TimeValue.css('left', loop1X + 'px').text(loop1Time.toFixed(2) + 's').show();
+
+                            // Thêm hiệu ứng nhấp nháy khi xe chạm vòng từ
+                            $loop1.css('background-color', 'rgba(250, 82, 82, 0.6)');
+                            setTimeout(function () {
+                                $loop1.css('background-color', 'rgba(250, 82, 82, 0.2)');
+                            }, 300);
                         }
 
-                        // Kiểm tra nếu tâm xe đi qua vòng từ 2
-                        if (!loop2Time && Math.abs(vehicleCenter - loop2X - loopWidth / 2) < 5) {
+                        // Kiểm tra nếu mép trước xe vừa chạm vào mép trái vòng từ 2
+                        if (!loop2Time && Math.abs(vehicleFront - loop2X) < 5) {
                             loop2Time = currentTime;
                             $('#time2-value').text(loop2Time.toFixed(2) + ' giây');
 
                             // Hiển thị đánh dấu thời gian tại vòng từ 2
                             $loop2TimeMarker.css('left', loop2X + 'px').show();
                             $loop2TimeValue.css('left', loop2X + 'px').text(loop2Time.toFixed(2) + 's').show();
+
+                            // Thêm hiệu ứng nhấp nháy khi xe chạm vòng từ
+                            $loop2.css('background-color', 'rgba(250, 82, 82, 0.6)');
+                            setTimeout(function () {
+                                $loop2.css('background-color', 'rgba(250, 82, 82, 0.2)');
+                            }, 300);
 
                             // PHẦN 12C: TÍNH TOÁN TỐC ĐỘ DỰA TRÊN KHOẢNG CÁCH VÀ THỜI GIAN
                             // Tính toán thời gian di chuyển và tốc độ
