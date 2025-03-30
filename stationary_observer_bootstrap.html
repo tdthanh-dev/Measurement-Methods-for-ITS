@@ -281,6 +281,22 @@
             top: 20px;
             left: 450px;
         }
+
+
+        /* CSS cho thiết bị di động */
+        @media (max-width: 767.98px) {
+
+            /* Hiển thị nút bắt đầu lại trên thiết bị di động */
+            #mobile-restart-button {
+                display: block !important;
+                font-size: 1.2rem;
+                width: 40px;
+                height: 40px;
+                padding: 0.25rem;
+                border-radius: 50%;
+                box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+            }
+        }
     </style>
 </head>
 
@@ -374,6 +390,12 @@
 
                         <div class="time-marker" style="left: 750px;"></div>
                         <div class="time-label" style="left: 750px;">25 phút</div>
+
+                        <!-- Nút bắt đầu lại trên giao diện điện thoại -->
+                        <button id="mobile-restart-button" class="btn btn-danger position-absolute"
+                            style="top: 10px; right: 10px; display: none; z-index: 10;">
+                            <i class="fas fa-redo-alt"></i>
+                        </button>
 
                         <!-- Đường đi và điểm dữ liệu của xe thăm dò -->
                         <!-- <div class="probe-path" style="left: 50px; width: 700px;"></div> -->
@@ -578,9 +600,26 @@
             let animationId = null;
             let isAnimating = false;
             let probeCarSpeed = 35; // km/h
-            let incomingCount = 42; // số xe đến (cùng chiều)
-            let outgoingCount = 18; // số xe đi (ngược chiều)
+            let incomingCount = 0; // số xe đến (cùng chiều) - bắt đầu từ 0
+            let outgoingCount = 0; // số xe đi (ngược chiều) - bắt đầu từ 0
             let observationTime = 15; // phút
+            let realIncomingCount = parseInt($('#incoming-slider').val()); // Giá trị từ slider
+            let realOutgoingCount = parseInt($('#outgoing-slider').val()); // Giá trị từ slider
+
+            // Thêm biến theo dõi cho hệ thống continuous spawning
+            let carUpFastCounter = 0;
+            let carUpSlowCounter = 0;
+            let carDownFastCounter = 0;
+            let carDownSlowCounter = 0;
+            let spawnIntervalId = null;
+
+            // Xác định vị trí vạch đỏ
+            const countingLineX = 450; // Vị trí vạch đỏ theo trục X
+
+            // Ẩn tất cả các xe mặc định
+            $(document).ready(function () {
+                $('#car-up-fast-1, #car-up-fast-2, #car-up-slow-1, #car-up-slow-2, #car-down-fast-1, #car-down-fast-2, #car-down-slow-1, #car-down-slow-2').css('visibility', 'hidden');
+            });
 
             // PHẦN 2: TẠO VẠCH KẺ ĐƯỜNG ĐỨT ĐOẠN
             const roadWidth = $('.road').width();
@@ -676,205 +715,343 @@
             // PHẦN 6: XỬ LÝ SỰ KIỆN CÁC NÚT ĐIỀU KHIỂN
             // Bắt đầu mô phỏng
             $('#start-button').click(function () {
-                if (isAnimating) return;
-
-                // Kiểm tra xem tốc độ có bằng 0 không
-                if (probeCarSpeed <= 1) {
-                    alert("Tốc độ xe thăm dò phải lớn hơn 0 km/h để bắt đầu mô phỏng!");
+                if (isAnimating) {
+                    // Nếu đang chạy, dừng lại
+                    clearInterval(spawnIntervalId);
+                    isAnimating = false;
+                    $(this).html('<i class="fas fa-play me-1"></i>Bắt đầu');
                     return;
                 }
 
-                // Kiểm tra để đảm bảo Ma >= Mw
-                if (incomingCount < outgoingCount) {
-                    alert("Số xe đến (Ma) phải lớn hơn hoặc bằng số xe đi (Mw) để đảm bảo tính hợp lý của mô hình!");
-                    outgoingCount = incomingCount;
-                    $('#outgoing-slider').val(outgoingCount);
-                    updateDisplayInfo();
-                    return;
-                }
-
+                // Bắt đầu mô phỏng liên tục
                 isAnimating = true;
+                $(this).html('<i class="fas fa-pause me-1"></i>Tạm dừng');
+
+                // Cuộn đến khu vực mô phỏng
+                $('html, body').animate({
+                    scrollTop: $('.simulation-area').offset().top - 20
+                }, 500);
 
                 // Đặt lại vị trí tất cả xe
                 resetCarPositions();
 
-                // Tạo hiệu ứng delay để reset animation
-                setTimeout(function () {
-                    // Thiết lập animation cho xe thăm dò (đi lên)
-                    const probeAnimationDuration = 15000 / probeCarSpeed * 35; // Tỉ lệ với tốc độ cơ sở 35km/h
+                // Đặt lại bộ đếm thực tế
+                incomingCount = 0;
+                outgoingCount = 0;
+                // Lấy giá trị mong muốn từ slider
+                realIncomingCount = parseInt($('#incoming-slider').val());
+                realOutgoingCount = parseInt($('#outgoing-slider').val());
+                updateDisplayInfo();
 
+                // Thiết lập spawning liên tục
+                spawnIntervalId = setInterval(function () {
+                    // Spawn xe đi lên làn nhanh
+                    if (Math.random() < 0.3 && carUpFastCounter < realIncomingCount) { // Tăng từ 10% lên 30%
+                        spawnUpFastCar();
+                    }
+
+                    // Spawn xe đi lên làn chậm
+                    if (Math.random() < 0.25 && carUpSlowCounter < realIncomingCount) { // Tăng từ 8% lên 25%
+                        spawnUpSlowCar();
+                    }
+
+                    // Spawn xe đi xuống làn nhanh
+                    if (Math.random() < 0.3 && carDownFastCounter < realOutgoingCount) { // Tăng từ 10% lên 30%
+                        spawnDownFastCar();
+                    }
+
+                    // Spawn xe đi xuống làn chậm
+                    if (Math.random() < 0.25 && carDownSlowCounter < realOutgoingCount) { // Tăng từ 7% lên 25%
+                        spawnDownSlowCar();
+                    }
+
+                }, 2500); // Giảm từ 3 giây xuống 2.5 giây (trung bình 2-3 giây)
+            });
+
+            // Hàm kiểm tra xem xe có đi qua vạch đỏ không
+            function checkCarPassedCountingLine(carId, direction) {
+                const $car = $(`#${carId}`);
+                const carLeft = $car.position().left;
+                const carWidth = $car.width();
+
+                // Nếu xe đi lên (từ trái sang phải)
+                if (direction === 'up') {
+                    // Phần đầu xe vừa vượt qua vạch đỏ
+                    if (carLeft <= countingLineX && carLeft + carWidth >= countingLineX) {
+                        return !$car.data('counted');
+                    }
+                }
+                // Nếu xe đi xuống (từ phải sang trái)
+                else if (direction === 'down') {
+                    // Phần đuôi xe vừa vượt qua vạch đỏ
+                    if (carLeft <= countingLineX && carLeft + carWidth >= countingLineX) {
+                        return !$car.data('counted');
+                    }
+                }
+
+                return false;
+            }
+
+            // Thêm giới hạn số xe hiển thị trên mỗi làn
+            function getLaneVehicleCount(laneClass) {
+                return $(laneClass).length;
+            }
+
+            // Hàm tạo xe đi lên làn nhanh mới
+            function spawnUpFastCar() {
+                // Giới hạn số xe đồng thời trên làn
+                if (getLaneVehicleCount('[id^="car-up-fast-dynamic-"]') >= 3) {
+                    return;
+                }
+
+                carUpFastCounter++;
+                const carId = `car-up-fast-dynamic-${carUpFastCounter}`;
+
+                // Tạo phần tử xe mới
+                const $newCar = $('<div>', {
+                    id: carId,
+                    class: 'car-up',
+                    css: {
+                        'top': '95px',
+                        'left': '25px',  // Bắt đầu từ bên trái
+                        'visibility': 'visible'
+                    },
+                    html: `<span>A${carUpFastCounter}</span>`
+                });
+
+                // Đánh dấu xe chưa được đếm
+                $newCar.data('counted', false);
+
+                // Thêm vào khu vực mô phỏng
+                $('.simulation-area').append($newCar);
+
+                // Thiết lập animation
+                const speedFactor = 1.5 + (Math.random() * 0.5); // Tăng từ 70-85% lên 150-200%
+                const carDuration = 15000 / (probeCarSpeed * speedFactor) * 35;
+
+                $newCar.css({
+                    'animation': `moveCarUp ${carDuration}ms linear forwards`
+                });
+
+                // Theo dõi vị trí xe để đếm khi đi qua vạch đỏ
+                const checkInterval = setInterval(function () {
+                    if (checkCarPassedCountingLine(carId, 'up')) {
+                        incomingCount++;
+                        updateDisplayInfo();
+                        $newCar.data('counted', true);
+                    }
+                }, 50);
+
+                // Xóa xe và clear interval khi animation kết thúc
+                setTimeout(function () {
+                    clearInterval(checkInterval);
+                    $newCar.remove();
+                }, carDuration + 500);
+            }
+
+            // Hàm tạo xe đi lên làn chậm mới
+            function spawnUpSlowCar() {
+                // Giới hạn số xe đồng thời trên làn
+                if (getLaneVehicleCount('[id^="car-up-slow-dynamic-"]') >= 3) {
+                    return;
+                }
+
+                carUpSlowCounter++;
+                const carId = `car-up-slow-dynamic-${carUpSlowCounter}`;
+
+                // Tạo phần tử xe mới
+                const $newCar = $('<div>', {
+                    id: carId,
+                    class: 'car-up',
+                    css: {
+                        'top': '155px',
+                        'left': '25px',  // Bắt đầu từ bên trái
+                        'visibility': 'visible'
+                    },
+                    html: `<span>AS${carUpSlowCounter}</span>`
+                });
+
+                // Đánh dấu xe chưa được đếm
+                $newCar.data('counted', false);
+
+                // Thêm vào khu vực mô phỏng
+                $('.simulation-area').append($newCar);
+
+                // Thiết lập animation với tốc độ ngẫu nhiên
+                const speedFactor = 2.0 + (Math.random() * 0.5); // Tăng từ 115-140% lên 200-250%
+                const carDuration = 15000 / (probeCarSpeed * speedFactor) * 35;
+
+                $newCar.css({
+                    'animation': `moveCarUp ${carDuration}ms linear forwards`
+                });
+
+                // Theo dõi vị trí xe để đếm khi đi qua vạch đỏ
+                const checkInterval = setInterval(function () {
+                    if (checkCarPassedCountingLine(carId, 'up')) {
+                        incomingCount++;
+                        updateDisplayInfo();
+                        $newCar.data('counted', true);
+                    }
+                }, 50);
+
+                // Xóa xe và clear interval khi animation kết thúc
+                setTimeout(function () {
+                    clearInterval(checkInterval);
+                    $newCar.remove();
+                }, carDuration + 500);
+            }
+
+            // Hàm tạo xe đi xuống làn nhanh mới
+            function spawnDownFastCar() {
+                // Giới hạn số xe đồng thời trên làn
+                if (getLaneVehicleCount('[id^="car-down-fast-dynamic-"]') >= 3) {
+                    return;
+                }
+
+                carDownFastCounter++;
+                const carId = `car-down-fast-dynamic-${carDownFastCounter}`;
+
+                // Tạo phần tử xe mới
+                const $newCar = $('<div>', {
+                    id: carId,
+                    class: 'car-down',
+                    css: {
+                        'top': '215px',
+                        'left': 'calc(100% - 150px)', // Bắt đầu từ bên phải
+                        'visibility': 'visible'
+                    },
+                    html: `<span>B${carDownFastCounter}</span>`
+                });
+
+                // Đánh dấu xe chưa được đếm
+                $newCar.data('counted', false);
+
+                // Thêm vào khu vực mô phỏng
+                $('.simulation-area').append($newCar);
+
+                // Thiết lập animation
+                const relativeSpeed = calculateSpeed() + probeCarSpeed;
+                const speedVariation = 1.7 + (Math.random() * 0.3); // Tăng từ 90-110% lên 170-200%
+                const carSpeed = relativeSpeed * speedVariation;
+                const carDuration = 15000 / carSpeed * 87;
+
+                $newCar.css({
+                    'animation': `moveCarDown ${carDuration}ms linear forwards`
+                });
+
+                // Theo dõi vị trí xe để đếm khi đi qua vạch đỏ
+                const checkInterval = setInterval(function () {
+                    if (checkCarPassedCountingLine(carId, 'down')) {
+                        outgoingCount++;
+                        updateDisplayInfo();
+                        $newCar.data('counted', true);
+                    }
+                }, 50);
+
+                // Xóa xe và clear interval khi animation kết thúc
+                setTimeout(function () {
+                    clearInterval(checkInterval);
+                    $newCar.remove();
+                }, carDuration + 500);
+            }
+
+            // Hàm tạo xe đi xuống làn chậm mới
+            function spawnDownSlowCar() {
+                // Giới hạn số xe đồng thời trên làn
+                if (getLaneVehicleCount('[id^="car-down-slow-dynamic-"]') >= 3) {
+                    return;
+                }
+
+                carDownSlowCounter++;
+                const carId = `car-down-slow-dynamic-${carDownSlowCounter}`;
+
+                // Tạo phần tử xe mới
+                const $newCar = $('<div>', {
+                    id: carId,
+                    class: 'car-down',
+                    css: {
+                        'top': '275px',
+                        'left': 'calc(100% - 150px)', // Bắt đầu từ bên phải
+                        'visibility': 'visible'
+                    },
+                    html: `<span>BS${carDownSlowCounter}</span>`
+                });
+
+                // Đánh dấu xe chưa được đếm
+                $newCar.data('counted', false);
+
+                // Thêm vào khu vực mô phỏng
+                $('.simulation-area').append($newCar);
+
+                // Thiết lập animation
+                const relativeSpeed = calculateSpeed() + probeCarSpeed;
+                const speedVariation = 1.5 + (Math.random() * 0.2); // Tăng từ 70-90% lên 150-170%
+                const carSpeed = relativeSpeed * speedVariation;
+                const carDuration = 15000 / carSpeed * 87;
+
+                $newCar.css({
+                    'animation': `moveCarDown ${carDuration}ms linear forwards`
+                });
+
+                // Theo dõi vị trí xe để đếm khi đi qua vạch đỏ
+                const checkInterval = setInterval(function () {
+                    if (checkCarPassedCountingLine(carId, 'down')) {
+                        outgoingCount++;
+                        updateDisplayInfo();
+                        $newCar.data('counted', true);
+                    }
+                }, 50);
+
+                // Xóa xe và clear interval khi animation kết thúc
+                setTimeout(function () {
+                    clearInterval(checkInterval);
+                    $newCar.remove();
+                }, carDuration + 500);
+            }
+
+            // Sửa đổi hàm reset để xử lý xe động
+            function resetCarPositions() {
+                // Đặt lại bộ đếm
+                carUpFastCounter = 0;
+                carUpSlowCounter = 0;
+                carDownFastCounter = 0;
+                carDownSlowCounter = 0;
+                incomingCount = 0;
+                outgoingCount = 0;
+
+                // Xóa tất cả xe động
+                $('[id^="car-up-fast-dynamic"], [id^="car-up-slow-dynamic"], [id^="car-down-fast-dynamic"], [id^="car-down-slow-dynamic"]').remove();
+
+                // Đặt lại vị trí xe thăm dò nếu có
+                if ($probeCar.length) {
                     $probeCar.css({
-                        'animation': `moveCarUp ${probeAnimationDuration}ms linear forwards`,
+                        'animation': 'none',
+                        'left': '25px',
                         'visibility': 'visible'
                     });
+                }
 
-                    // Tính tốc độ dòng xe
-                    const streamSpeed = calculateSpeed();
-
-                    // Tính toán số lượng xe hiển thị dựa trên tỷ lệ với incomingCount và outgoingCount
-                    const maxVisibleCarsUp = 4; // Tổng số xe chiều đi lên có thể hiển thị
-                    const maxVisibleCarsDown = 4; // Tổng số xe chiều đi xuống có thể hiển thị
-
-                    // Tính phân bố xe trên làn nhanh/chậm (tối đa 2 xe mỗi làn)
-                    let fastLaneUp = Math.min(2, Math.ceil(incomingCount * 0.6 / 10)); // 60% xe trên làn nhanh
-                    let slowLaneUp = Math.min(2, Math.ceil(incomingCount * 0.4 / 10)); // 40% xe trên làn chậm
-
-                    let fastLaneDown = Math.min(2, Math.ceil(outgoingCount * 0.7 / 5)); // 70% xe trên làn nhanh
-                    let slowLaneDown = Math.min(2, Math.ceil(outgoingCount * 0.3 / 5)); // 30% xe trên làn chậm
-
-                    // Hiển thị xe chiều đi lên làn nhanh dựa trên số lượng xe thực tế
-                    for (let i = 1; i <= fastLaneUp; i++) {
-                        const $car = $(`#car-up-fast-${i}`);
-                        // Hiển thị xe sau khi có delay để tạo khoảng cách an toàn với xe thăm dò
-                        const safeDistanceDelay = i * 3000;
-
-                        setTimeout(() => {
-                            $car.css({
-                                'visibility': 'visible',
-                                'left': '25px'
-                            });
-
-                            // Tốc độ luôn chậm hơn xe thăm dò 15-30%
-                            const speedFactor = 0.7 + (Math.random() * 0.15); // 70-85% tốc độ xe thăm dò
-                            const carDuration = probeAnimationDuration / speedFactor;
-
-                            $car.css({
-                                'animation': `moveCarUp ${carDuration}ms linear forwards`
-                            });
-                        }, safeDistanceDelay);
-                    }
-
-                    // Hiển thị xe chiều đi lên làn chậm
-                    for (let i = 1; i <= slowLaneUp; i++) {
-                        const $car = $(`#car-up-slow-${i}`);
-
-                        // Điều chỉnh độ trễ để tạo khoảng cách ban đầu phù hợp hơn
-                        const safeDistanceDelay = i === 1 ? 1000 : 3500;
-
-                        setTimeout(() => {
-                            $car.css({
-                                'visibility': 'visible',
-                                'left': '25px'
-                            });
-
-                            // Điều chỉnh tốc độ cho từng xe cụ thể
-                            let speedFactor;
-                            if (i === 1) {
-                                // A3: Tăng tốc độ lên rất cao (160-180% tốc độ xe thăm dò)
-                                speedFactor = 1.6 + (Math.random() * 0.2);
-                            } else {
-                                // A4: Chậm hơn A3 nhưng vẫn nhanh hơn xe thăm dò (115-130% tốc độ xe thăm dò)
-                                speedFactor = 1.15 + (Math.random() * 0.15);
-                            }
-
-                            const carDuration = probeAnimationDuration / speedFactor;
-
-                            $car.css({
-                                'animation': `moveCarUp ${carDuration}ms linear forwards`
-                            });
-                        }, safeDistanceDelay);
-                    }
-
-                    // Tính khoảng cách giữa các xe dựa trên mật độ
-                    const density = calculateDensity(); // xe/km
-                    const roadLength = 0.8; // Chiều dài đoạn đường mô phỏng (km)
-                    const expectedCarsPerRoad = density * roadLength;
-
-                    // Hiển thị xe chiều đi xuống làn nhanh
-                    for (let i = 1; i <= fastLaneDown; i++) {
-                        const $car = $(`#car-down-fast-${i}`);
-
-                        // Tạo tốc độ phù hợp với streamSpeed đã tính
-                        // Xe ngược chiều sẽ có tốc độ tương đối với xe thăm dò là v_rel = v_stream + v_obs
-                        const relativeSpeed = streamSpeed + probeCarSpeed;
-                        const speedVariation = 0.9 + (Math.random() * 0.2); // 90-110% của tốc độ tương đối
-                        const carSpeed = relativeSpeed * speedVariation;
-
-                        // Thời gian di chuyển qua màn hình
-                        const carDuration = 15000 / carSpeed * 87;
-
-                        // Vị trí ban đầu dựa trên mật độ giao thông
-                        const roadWidth = $('.road').width();
-                        const startPos = 300 + (i - 1) * (roadWidth / (expectedCarsPerRoad + 1));
-                        const delayTime = (i - 1) * 2200;
-
-                        $car.css({
-                            'animation': `moveCarDown ${carDuration}ms linear forwards`,
-                            'animation-delay': `${delayTime}ms`,
-                            'visibility': 'visible',
-                            'left': `${startPos}px`
-                        });
-                    }
-
-                    // Hiển thị xe chiều đi xuống làn chậm
-                    for (let i = 1; i <= slowLaneDown; i++) {
-                        const $car = $(`#car-down-slow-${i}`);
-
-                        // Xe đi chậm hơn tốc độ dòng tổng thể
-                        const relativeSpeed = streamSpeed + probeCarSpeed;
-                        const speedVariation = 0.7 + (Math.random() * 0.2); // 70-90% của tốc độ tương đối
-                        const carSpeed = relativeSpeed * speedVariation;
-
-                        const carDuration = 15000 / carSpeed * 87;
-
-                        // Vị trí ban đầu dựa trên mật độ giao thông
-                        const roadWidth = $('.road').width();
-                        const startPos = 100 + (i - 1) * (roadWidth / (expectedCarsPerRoad + 1));
-                        const delayTime = (i - 1) * 3000;
-
-                        $car.css({
-                            'animation': `moveCarDown ${carDuration}ms linear forwards`,
-                            'animation-delay': `${delayTime}ms`,
-                            'visibility': 'visible',
-                            'left': `${startPos}px`
-                        });
-                    }
-
-                    // Thiết lập kết thúc animation sau khoảng thời gian dài nhất
-                    setTimeout(function () {
-                        isAnimating = false;
-                    }, probeAnimationDuration + 5000); // Thêm 5s cho animation-delay
-                }, 50);
-            });
-
-            // Đặt lại mô phỏng
-            $('#reset-button').click(function () {
-                // Dừng animation đang chạy
-                resetCarPositions();
-                isAnimating = false;
-            });
-
-            // Hàm đặt lại vị trí tất cả xe
-            function resetCarPositions() {
-                // Đặt lại vị trí xe thăm dò
-                $probeCar.css({
-                    'animation': 'none',
-                    'left': '25px',
-                    'visibility': 'visible'
-                });
-
-                // Đặt lại vị trí các xe đi lên làn nhanh (ẩn đến khi xe thăm dò di chuyển)
-                $('#car-up-fast-1, #car-up-fast-2').css({
-                    'animation': 'none',
-                    'left': '0px',
-                    'visibility': 'hidden'
-                });
-
-                // Đặt lại vị trí các xe đi lên làn chậm (ẩn đến khi xe thăm dò di chuyển)
-                $('#car-up-slow-1, #car-up-slow-2').css({
-                    'animation': 'none',
-                    'left': '0px',
-                    'visibility': 'hidden'
-                });
-
-                // Đặt lại vị trí các xe đi xuống làn nhanh
-                $('#car-down-fast-1').css({ 'animation': 'none', 'left': '300px', 'visibility': 'visible' });
-                $('#car-down-fast-2').css({ 'animation': 'none', 'left': '600px', 'visibility': 'visible' });
-
-                // Đặt lại vị trí các xe đi xuống làn chậm
-                $('#car-down-slow-1').css({ 'animation': 'none', 'left': '100px', 'visibility': 'visible' });
-                $('#car-down-slow-2').css({ 'animation': 'none', 'left': '650px', 'visibility': 'visible' });
+                // Cập nhật hiển thị
+                updateDisplayInfo();
             }
+
+            // Điều chỉnh nút reset để dừng spawning
+            $('#reset-button, #mobile-restart-button').click(function () {
+                // Dừng spawning liên tục
+                clearInterval(spawnIntervalId);
+                isAnimating = false;
+                $('#start-button').html('<i class="fas fa-play me-1"></i>Bắt đầu');
+
+                // Đặt lại vị trí tất cả xe
+                resetCarPositions();
+
+                // Đặt lại bộ đếm theo slider
+                realIncomingCount = parseInt($('#incoming-slider').val());
+                realOutgoingCount = parseInt($('#outgoing-slider').val());
+                incomingCount = 0;
+                outgoingCount = 0;
+                updateDisplayInfo();
+            });
 
             // PHẦN 7: KHỞI TẠO BAN ĐẦU
             // Cập nhật hiển thị ban đầu

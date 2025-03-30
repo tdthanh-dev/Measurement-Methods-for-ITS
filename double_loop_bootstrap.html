@@ -119,7 +119,7 @@
         .loop-time-marker {
             position: absolute;
             width: 2px;
-            height: 300px;
+            height: 150px;
             background-color: rgba(250, 82, 82, 0.8);
             top: 80px;
             z-index: 1;
@@ -164,6 +164,84 @@
         .calculated {
             color: #20c997;
         }
+
+        /* CSS cho thiết bị di động */
+        @media (max-width: 991.98px) {
+
+            /* Điều chỉnh khu vực mô phỏng */
+            .simulation-area {
+                height: 350px;
+                /* Giảm chiều cao trên mobile */
+                margin-bottom: 1rem;
+            }
+
+            /* Thay đổi bố cục cột để bảng điều khiển nằm dưới khu vực mô phỏng */
+            .mobile-controls {
+                order: 2;
+                width: 100%;
+            }
+
+            .mobile-simulation {
+                order: 1;
+                margin-bottom: 1rem;
+                width: 100%;
+            }
+
+            /* Đảm bảo row có flex-direction column trên mobile */
+            .mobile-row {
+                display: flex;
+                flex-direction: column;
+            }
+
+            /* Thu nhỏ công thức */
+            .formula-box {
+                padding: 10px;
+                font-size: 0.85rem;
+                max-width: 90%;
+            }
+
+            /* Điều chỉnh kích thước và vị trí của xe */
+            #vehicle {
+                width: 100px;
+                height: 40px;
+                font-size: 14px;
+            }
+
+            /* Điều chỉnh kích thước và vị trí của các marker */
+            .loop-time-value {
+                font-size: 11px;
+                padding: 2px 4px;
+            }
+
+            /* Điều chỉnh các timer */
+            .moving-timer {
+                font-size: 12px;
+                padding: 2px 8px;
+            }
+
+            /* Điều chỉnh kích thước vòng từ */
+            .loop-sensor {
+                width: 50px;
+                height: 70px;
+            }
+
+            /* Điều chỉnh nhãn khoảng cách */
+            .distance-label {
+                font-size: 12px;
+                top: 40px;
+            }
+
+            /* Hiển thị nút bắt đầu lại trên thiết bị di động */
+            #mobile-restart-button {
+                display: block !important;
+                font-size: 1.2rem;
+                width: 40px;
+                height: 40px;
+                padding: 0.25rem;
+                border-radius: 50%;
+                box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+            }
+        }
     </style>
 </head>
 
@@ -173,9 +251,9 @@
         <h1 class="text-center mb-2">Nguyên lý hoạt động của vòng từ kép</h1>
         <h4 class="text-center text-muted mb-4">Đo tốc độ bằng hai vòng từ</h4>
 
-        <div class="row">
+        <div class="row mobile-row">
             <!-- Khu vực hiển thị mô phỏng - chiếm 8/12 độ rộng trên màn hình lớn -->
-            <div class="col-lg-8">
+            <div class="col-lg-8 mobile-simulation">
                 <div class="card shadow simulation-area mb-4">
                     <!-- Đường giao thông -->
                     <div class="road"></div>
@@ -204,6 +282,12 @@
                     <div id="loop2-time-marker" class="loop-time-marker"></div>
                     <div id="loop2-time-value" class="loop-time-value"></div>
 
+                    <!-- Nút bắt đầu lại trên giao diện điện thoại -->
+                    <button id="mobile-restart-button" class="btn btn-danger position-absolute"
+                        style="top: 10px; right: 10px; display: none; z-index: 10;">
+                        <i class="fas fa-redo-alt"></i>
+                    </button>
+
                     <!-- Công thức tính tốc độ vòng từ kép -->
                     <div class="formula-box position-absolute bottom-0 start-50 translate-middle-x mb-3 text-center">
                         Vòng từ kép:<br>
@@ -215,7 +299,7 @@
             </div>
 
             <!-- Bảng điều khiển mô phỏng - chiếm 4/12 độ rộng màn hình lớn -->
-            <div class="col-lg-4">
+            <div class="col-lg-4 mobile-controls">
                 <div class="card shadow mb-4">
                     <div class="card-header bg-primary text-white text-center py-3">
                         <h5 class="mb-0">Điều khiển mô phỏng</h5>
@@ -382,6 +466,9 @@
                 if (isAnimating) return;
                 isAnimating = true;
 
+                // Cuộn đến khu vực mô phỏng ngay lập tức
+                $('html, body').scrollTop($('.simulation-area').offset().top - 20);
+
                 // Đặt lại các biến thời gian
                 loop1Time = null;
                 loop2Time = null;
@@ -438,24 +525,39 @@
                         // Tính vị trí trung tâm xe để so sánh với vị trí vòng từ
                         const vehicleCenter = getVehicleCenter(position);
 
-                        // Kiểm tra nếu tâm xe đi qua vòng từ 1 - phát hiện bằng cách so sánh khoảng cách
-                        if (!loop1Time && Math.abs(vehicleCenter - loop1X - loopWidth / 2) < 5) {
+                        // Tính vị trí mép trước của xe
+                        const vehicleFront = position + vehicleWidth;
+
+                        // Kiểm tra nếu mép trước xe vừa chạm vào mép trái vòng từ 1
+                        if (!loop1Time && Math.abs(vehicleFront - loop1X) < 5) {
                             loop1Time = currentTime;
                             $('#time1-value').text(loop1Time.toFixed(2) + ' giây');
 
                             // Hiển thị đánh dấu thời gian tại vòng từ 1
                             $loop1TimeMarker.css('left', loop1X + 'px').show();
                             $loop1TimeValue.css('left', loop1X + 'px').text(loop1Time.toFixed(2) + 's').show();
+
+                            // Thêm hiệu ứng nhấp nháy khi xe chạm vòng từ
+                            $loop1.css('background-color', 'rgba(250, 82, 82, 0.6)');
+                            setTimeout(function () {
+                                $loop1.css('background-color', 'rgba(250, 82, 82, 0.2)');
+                            }, 300);
                         }
 
-                        // Kiểm tra nếu tâm xe đi qua vòng từ 2
-                        if (!loop2Time && Math.abs(vehicleCenter - loop2X - loopWidth / 2) < 5) {
+                        // Kiểm tra nếu mép trước xe vừa chạm vào mép trái vòng từ 2
+                        if (!loop2Time && Math.abs(vehicleFront - loop2X) < 5) {
                             loop2Time = currentTime;
                             $('#time2-value').text(loop2Time.toFixed(2) + ' giây');
 
                             // Hiển thị đánh dấu thời gian tại vòng từ 2
                             $loop2TimeMarker.css('left', loop2X + 'px').show();
                             $loop2TimeValue.css('left', loop2X + 'px').text(loop2Time.toFixed(2) + 's').show();
+
+                            // Thêm hiệu ứng nhấp nháy khi xe chạm vòng từ
+                            $loop2.css('background-color', 'rgba(250, 82, 82, 0.6)');
+                            setTimeout(function () {
+                                $loop2.css('background-color', 'rgba(250, 82, 82, 0.2)');
+                            }, 300);
 
                             // PHẦN 12C: TÍNH TOÁN TỐC ĐỘ DỰA TRÊN KHOẢNG CÁCH VÀ THỜI GIAN
                             // Tính toán thời gian di chuyển và tốc độ
@@ -483,31 +585,126 @@
             });
 
             // PHẦN 13: XỬ LÝ SỰ KIỆN ĐẶT LẠI MÔ PHỎNG
-            $('#reset-button').click(function () {
-                // Hủy animation đang chạy nếu có
-                if (animationId) {
-                    cancelAnimationFrame(animationId);
-                    animationId = null;
-                }
+            $('#reset-button, #mobile-restart-button').click(function () {
+                if (isAnimating) return;
+                isAnimating = true;
 
-                // Đặt lại vị trí xe và thanh thời gian
-                $vehicle.css('left', roadStartX + 'px');
-                $movingTimer.css('left', (roadStartX + vehicleWidth / 2 - 40) + 'px').text('0.00s');
-
-                // Đặt lại các giá trị hiển thị thời gian
-                $('#time1-value, #time2-value, #delta-time, #calculated-speed').text('--');
-
-                // Ẩn tất cả đánh dấu thời gian
-                $loop1TimeMarker.hide();
-                $loop1TimeValue.hide();
-                $loop2TimeMarker.hide();
-                $loop2TimeValue.hide();
+                // Cuộn đến khu vực mô phỏng ngay lập tức
+                $('html, body').scrollTop($('.simulation-area').offset().top - 20);
 
                 // Đặt lại các biến thời gian
                 loop1Time = null;
                 loop2Time = null;
                 currentTime = 0;
-                isAnimating = false;
+
+                // Đặt xe về vị trí ban đầu
+                $vehicle.css('left', roadStartX + 'px');
+                $movingTimer.css('left', roadStartX + 'px').text('0.00s');
+
+                // Đặt lại các giá trị thời gian
+                $('#time1-value, #time2-value, #delta-time, #calculated-speed').text('--');
+
+                // Ẩn đánh dấu thời gian
+                $loop1TimeMarker.hide();
+                $loop1TimeValue.hide();
+                $loop2TimeMarker.hide();
+                $loop2TimeValue.hide();
+
+                // Xác định vị trí thực tế của các vòng từ trên màn hình
+                const loop1X = $loop1.position().left;
+                const loop2X = $loop2.position().left;
+
+                // Tính toán tham số thời gian cho animation
+                const roadLength = roadEndX - roadStartX; // pixels
+                const timeToCompleteAnimation = roadLength / (vehicleSpeed * animationSpeed / 10);
+
+                // Tính toán thời gian dự kiến (chuẩn) giữa hai vòng từ
+                const expectedDeltaTime = calculateExpectedTime();
+
+                // Ghi lại thời điểm bắt đầu thực tế
+                startTime = performance.now();
+
+                // PHẦN 12: HÀM XỬ LÝ ANIMATION CHÍNH
+                function animateVehicle(timestamp) {
+                    // Tính toán thời gian đã trôi qua từ khi bắt đầu
+                    const elapsedTime = timestamp - startTime;
+                    // Tính phần trăm hoàn thành của animation
+                    const progress = elapsedTime / timeToCompleteAnimation;
+
+                    if (progress < 1) {
+                        // PHẦN 12A: TÍNH THỜI GIAN VÀ DI CHUYỂN XE
+                        // Tính thời gian hiện tại trong mô phỏng (giây)
+                        currentTime = progress * (roadLength / (vehicleSpeed / 3.6 * scaleFactor));
+
+                        // Di chuyển xe dựa trên tiến độ animation
+                        const position = roadStartX + progress * roadLength;
+                        $vehicle.css('left', position + 'px');
+
+                        // Di chuyển thanh thời gian cùng với xe
+                        $movingTimer.css('left', (position + vehicleWidth / 2 - 40) + 'px')
+                            .text(currentTime.toFixed(2) + 's');
+
+                        // PHẦN 12B: PHÁT HIỆN TƯƠNG TÁC VỚI VÒNG TỪ
+                        // Tính vị trí trung tâm xe để so sánh với vị trí vòng từ
+                        const vehicleCenter = getVehicleCenter(position);
+
+                        // Tính vị trí mép trước của xe
+                        const vehicleFront = position + vehicleWidth;
+
+                        // Kiểm tra nếu mép trước xe vừa chạm vào mép trái vòng từ 1
+                        if (!loop1Time && Math.abs(vehicleFront - loop1X) < 5) {
+                            loop1Time = currentTime;
+                            $('#time1-value').text(loop1Time.toFixed(2) + ' giây');
+
+                            // Hiển thị đánh dấu thời gian tại vòng từ 1
+                            $loop1TimeMarker.css('left', loop1X + 'px').show();
+                            $loop1TimeValue.css('left', loop1X + 'px').text(loop1Time.toFixed(2) + 's').show();
+
+                            // Thêm hiệu ứng nhấp nháy khi xe chạm vòng từ
+                            $loop1.css('background-color', 'rgba(250, 82, 82, 0.6)');
+                            setTimeout(function () {
+                                $loop1.css('background-color', 'rgba(250, 82, 82, 0.2)');
+                            }, 300);
+                        }
+
+                        // Kiểm tra nếu mép trước xe vừa chạm vào mép trái vòng từ 2
+                        if (!loop2Time && Math.abs(vehicleFront - loop2X) < 5) {
+                            loop2Time = currentTime;
+                            $('#time2-value').text(loop2Time.toFixed(2) + ' giây');
+
+                            // Hiển thị đánh dấu thời gian tại vòng từ 2
+                            $loop2TimeMarker.css('left', loop2X + 'px').show();
+                            $loop2TimeValue.css('left', loop2X + 'px').text(loop2Time.toFixed(2) + 's').show();
+
+                            // Thêm hiệu ứng nhấp nháy khi xe chạm vòng từ
+                            $loop2.css('background-color', 'rgba(250, 82, 82, 0.6)');
+                            setTimeout(function () {
+                                $loop2.css('background-color', 'rgba(250, 82, 82, 0.2)');
+                            }, 300);
+
+                            // PHẦN 12C: TÍNH TOÁN TỐC ĐỘ DỰA TRÊN KHOẢNG CÁCH VÀ THỜI GIAN
+                            // Tính toán thời gian di chuyển và tốc độ
+                            if (loop1Time) {
+                                // Sử dụng thời gian dự kiến thay vì thời gian đo được
+                                // để đảm bảo kết quả tính toán bằng tốc độ thiết lập
+                                $('#delta-time').text(expectedDeltaTime.toFixed(2) + ' giây');
+
+                                // Hiển thị tốc độ ban đầu - đảm bảo hiển thị đúng tốc độ đã chọn
+                                $('#calculated-speed').text(vehicleSpeed.toFixed(1) + ' km/h');
+                            }
+                        }
+
+                        // Tiếp tục vòng lặp animation
+                        animationId = requestAnimationFrame(animateVehicle);
+                    } else {
+                        // PHẦN 12D: KẾT THÚC ANIMATION
+                        $vehicle.css('left', roadEndX + 'px');
+                        isAnimating = false;
+                    }
+                }
+
+                // Bắt đầu animation loop
+                animationId = requestAnimationFrame(animateVehicle);
             });
 
             // PHẦN 14: KHỞI TẠO MÔ PHỎNG
