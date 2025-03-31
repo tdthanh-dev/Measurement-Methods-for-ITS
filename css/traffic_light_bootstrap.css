@@ -1,0 +1,501 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.simulation-area {
+    position: relative;
+    height: 550px;
+    overflow: hidden;
+    background-color: #85b664;
+    margin-bottom: 20px;
+    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Đường giao thông */
+.road-vertical {
+    position: absolute;
+    width: 120px;
+    height: 100%;
+    background-color: #3c4043;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.road-horizontal {
+    position: absolute;
+    width: 100%;
+    height: 120px;
+    background-color: #3c4043;
+    top: 50%;
+    transform: translateY(-50%);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Vạch kẻ đường */
+.lane-marking-v {
+    position: absolute;
+    width: 6px;
+    height: 30px;
+    background-color: white;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+}
+
+.lane-marking-h {
+    position: absolute;
+    width: 30px;
+    height: 6px;
+    background-color: white;
+    top: 50%;
+    transform: translateY(-50%);
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Vị trí đèn tín hiệu */
+.traffic-light {
+    position: absolute;
+    width: 30px;
+    height: 90px;
+    background-color: #222;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    padding: 8px 0;
+    z-index: 100;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.5), inset 0 0 4px rgba(0, 0, 0, 0.5);
+    border: 2px solid #111;
+}
+
+.traffic-light:before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8px;
+    height: 40px;
+    background-color: #333;
+    z-index: -1;
+}
+
+.north-light {
+    bottom: 65%;
+    left: 39%;
+}
+
+.south-light {
+    top: 65%;
+    right: 39%;
+}
+
+.east-light {
+    top: 30%;
+    left: 65%;
+    transform: rotate(90deg);
+}
+
+.west-light {
+    top: 53%;
+    right: 65%;
+    transform: rotate(90deg);
+}
+
+/* Các bóng đèn */
+.light {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background-color: #444;
+    box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.5);
+    border: 1px solid #333;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    /* Thêm transition để dễ thấy thay đổi */
+}
+
+.red {
+    background-color: #444;
+}
+
+.yellow {
+    background-color: #444;
+}
+
+.green {
+    background-color: #444;
+}
+
+.red.active {
+    background-color: #ff3a3a;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.8), inset 0 0 10px rgba(255, 255, 255, 0.4);
+}
+
+.yellow.active {
+    background-color: #ffcc00;
+    box-shadow: 0 0 15px rgba(255, 204, 0, 0.8), inset 0 0 10px rgba(255, 255, 255, 0.4);
+}
+
+.green.active {
+    background-color: #4cff4c !important;
+    /* Thêm !important để đảm bảo ghi đè các quy tắc CSS khác */
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.8), inset 0 0 10px rgba(255, 255, 255, 0.4) !important;
+}
+
+/* Xe cộ */
+.vehicle {
+    position: absolute;
+    width: 40px;
+    height: 30px;
+    z-index: 5;
+    transition: transform 0.2s ease;
+    will-change: transform, left, top;
+}
+
+.vehicle i {
+    font-size: 28px;
+    filter: drop-shadow(1px 2px 2px rgba(0, 0, 0, 0.3));
+}
+
+.vehicle-north {
+    bottom: 100%;
+    left: 43%;
+    transform: rotate(180deg);
+}
+
+.vehicle-south {
+    top: 100%;
+    right: 38%;
+}
+
+.vehicle-east {
+    top: 38%;
+    right: 100%;
+    transform: rotate(270deg);
+}
+
+.vehicle-west {
+    top: 55%;
+    left: 100%;
+    transform: rotate(90deg);
+}
+
+.vehicle.car i {
+    color: #4dabf7;
+}
+
+.vehicle.truck i {
+    color: #f76707;
+}
+
+.vehicle.motorcycle i {
+    color: #da77f2;
+}
+
+.vehicle.bus i {
+    color: #74b816;
+}
+
+.vehicle.ambulance i {
+    color: #ff6b6b;
+}
+
+.vehicle.taxi i {
+    color: #ffd43b;
+}
+
+/* Vỉa hè */
+.sidewalk-h-top {
+    position: absolute;
+    width: 100%;
+    height: 30px;
+    background-color: #adb5bd;
+    top: calc(50% - 150px);
+    background-image: linear-gradient(90deg, #adb5bd 80%, #979da5 80%);
+    background-size: 60px 100%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.sidewalk-h-bottom {
+    position: absolute;
+    width: 100%;
+    height: 30px;
+    background-color: #adb5bd;
+    top: calc(50% + 120px);
+    background-image: linear-gradient(90deg, #adb5bd 80%, #979da5 80%);
+    background-size: 60px 100%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.sidewalk-v-left {
+    position: absolute;
+    width: 30px;
+    height: 100%;
+    background-color: #adb5bd;
+    left: calc(50% - 150px);
+    background-image: linear-gradient(0deg, #adb5bd 80%, #979da5 80%);
+    background-size: 100% 60px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.sidewalk-v-right {
+    position: absolute;
+    width: 30px;
+    height: 100%;
+    background-color: #adb5bd;
+    left: calc(50% + 120px);
+    background-image: linear-gradient(0deg, #adb5bd 80%, #979da5 80%);
+    background-size: 100% 60px;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Phân làn đường */
+.lane-divider-v {
+    position: absolute;
+    width: 3px;
+    height: 100%;
+    background-color: #ffd43b;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+}
+
+.lane-divider-h {
+    position: absolute;
+    width: 100%;
+    height: 3px;
+    background-color: #ffd43b;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+}
+
+/* Nút dừng khẩn cấp */
+.emergency-button {
+    background: linear-gradient(145deg, #e63946, #d62828);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    box-shadow: 0 6px 10px rgba(214, 40, 40, 0.3), inset 0 -4px 0 rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    margin: 10px auto;
+    display: block;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.emergency-button:hover {
+    background: linear-gradient(145deg, #d62828, #c21c1c);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(214, 40, 40, 0.4), inset 0 -4px 0 rgba(0, 0, 0, 0.2);
+}
+
+.emergency-button:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 5px rgba(214, 40, 40, 0.4), inset 0 -2px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* Hiển thị thời gian đếm ngược */
+.countdown {
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    border-radius: 50%;
+    font-size: 14px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 101;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+}
+
+.north-countdown {
+    bottom: 66%;
+    left: 48%;
+}
+
+.south-countdown {
+    top: 66%;
+    right: 48%;
+}
+
+.east-countdown {
+    top: 48%;
+    left: 66%;
+}
+
+.west-countdown {
+    top: 48%;
+    right: 66%;
+}
+
+/* Vạch dừng xe */
+.stop-line {
+    position: absolute;
+    background-color: white;
+    z-index: 3;
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+.stop-line-north {
+    width: 56px;
+    height: 8px;
+    bottom: 58%;
+    left: 38%;
+    margin-bottom: 12px;
+}
+
+.stop-line-south {
+    width: 56px;
+    height: 8px;
+    top: 58%;
+    right: 38%;
+    margin-top: 12px;
+}
+
+.stop-line-east {
+    width: 8px;
+    height: 56px;
+    top: 38%;
+    left: 58%;
+    margin-left: 12px;
+}
+
+.stop-line-west {
+    width: 8px;
+    height: 56px;
+    top: 50%;
+    right: 58%;
+    margin-right: 12px;
+}
+
+/* Vạch qua đường */
+.crosswalk {
+    position: absolute;
+    background-color: white;
+    z-index: 3;
+    display: none;
+    /* Ẩn vạch qua đường theo yêu cầu */
+}
+
+.crosswalk-h {
+    height: 20px;
+    width: 120px;
+    background: repeating-linear-gradient(90deg, transparent, transparent 10px, white 10px, white 30px);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.crosswalk-v {
+    width: 20px;
+    height: 120px;
+    background: repeating-linear-gradient(0deg, transparent, transparent 10px, white 10px, white 30px);
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Nút thêm xe */
+.add-vehicle-btn {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #4dabf7, #0d6efd);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 100;
+    box-shadow: 0 4px 8px rgba(13, 110, 253, 0.3), inset 0 -2px 0 rgba(0, 0, 0, 0.1);
+    border: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.add-vehicle-btn:hover {
+    transform: scale(1.08);
+    background: linear-gradient(145deg, #3d9cec, #0b5ed7);
+    box-shadow: 0 6px 12px rgba(13, 110, 253, 0.4), inset 0 -2px 0 rgba(0, 0, 0, 0.1);
+}
+
+.add-vehicle-btn:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 4px rgba(13, 110, 253, 0.3), inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+}
+
+.add-north {
+    bottom: 4%;
+    left: 38%;
+}
+
+.add-south {
+    top: 4%;
+    right: 38%;
+}
+
+.add-east {
+    top: 38%;
+    left: 4%;
+}
+
+.add-west {
+    top: 42%;
+    right: 4%;
+}
+
+/* Control Panel Styling */
+.control-panel {
+    background-color: white;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.card {
+    transition: box-shadow 0.3s;
+    border: none;
+}
+
+.card:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1) !important;
+}
+
+.card-header {
+    border-radius: 10px 10px 0 0 !important;
+    font-weight: 600;
+}
+
+.form-range::-webkit-slider-thumb {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.form-label {
+    color: #495057;
+}
+
+.btn {
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
