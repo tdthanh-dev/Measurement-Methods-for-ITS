@@ -162,24 +162,25 @@ body {
 .vehicle-north {
     bottom: 100%;
     left: 43%;
-    transform: rotate(180deg);
+    transform: rotate(90deg);
 }
 
 .vehicle-south {
     top: 100%;
     right: 38%;
+    transform: rotate(270deg);
 }
 
 .vehicle-east {
     top: 38%;
     right: 100%;
-    transform: rotate(270deg);
+    transform: scaleX(-1);
 }
 
 .vehicle-west {
     top: 55%;
     left: 100%;
-    transform: rotate(90deg);
+    transform: scaleX(1)
 }
 
 .vehicle.car i {

@@ -52,7 +52,7 @@ $(document).ready(function () {
         north: 195,  // Vị trí Y của vạch dừng hướng Bắc
         south: 355,  // Vị trí Y của vạch dừng hướng Nam
         east: 315,   // Vị trí X của vạch dừng hướng Đông
-        west: 235    // Vị trí X của vạch dừng hướng Tây
+        west: 250    // Vị trí X của vạch dừng hướng Tây
     };
 
     // Tốc độ tối đa của xe (px mỗi frame) dựa trên vehicleSpeed
