@@ -128,6 +128,40 @@ $(document).ready(function () {
             left: initialPositions[direction].left
         });
 
+        // Thêm sự kiện click đúp để đánh dấu xe phạt nguội
+        newVehicle.on('dblclick', function () {
+            const wasMarked = $(this).hasClass('fined-vehicle');
+
+            if (wasMarked) {
+                // Nếu đã đánh dấu, bỏ đánh dấu
+                $(this).removeClass('fined-vehicle');
+                console.log(`Bỏ đánh dấu phạt nguội xe ${id}`);
+
+                // Cập nhật trạng thái trong mảng xe
+                const vehicleIndex = vehicles[direction].findIndex(v => v.id === id);
+                if (vehicleIndex !== -1) {
+                    vehicles[direction][vehicleIndex].fined = false;
+                }
+            } else {
+                // Nếu chưa đánh dấu, thêm đánh dấu
+                $(this).addClass('fined-vehicle');
+                console.log(`Đánh dấu phạt nguội xe ${id}`);
+
+                // Hiển thị thông báo phạt nguội
+                const notification = $(`<div class="alert alert-danger fine-notification" 
+                    style="position: absolute; top: ${$(this).css('top')}; left: ${$(this).css('left')}; z-index: 1001;">
+                    Phạt nguội!</div>`);
+                $('body').append(notification);
+                setTimeout(() => notification.fadeOut('slow', function () { $(this).remove(); }), 2000);
+
+                // Cập nhật trạng thái trong mảng xe
+                const vehicleIndex = vehicles[direction].findIndex(v => v.id === id);
+                if (vehicleIndex !== -1) {
+                    vehicles[direction][vehicleIndex].fined = true;
+                }
+            }
+        });
+
         // Thêm vào mảng xe
         vehicles[direction].push({
             id: id,
@@ -136,7 +170,8 @@ $(document).ready(function () {
             speed: 0,
             maxSpeed: getMaxSpeed() * (0.7 + Math.random() * 0.6), // Tốc độ ngẫu nhiên cho mỗi xe
             lastUpdate: performance.now(),
-            stopped: false
+            stopped: false,
+            fined: false  // Thêm trạng thái phạt nguội
         });
 
         return vehicles[direction][vehicles[direction].length - 1];
@@ -327,7 +362,8 @@ $(document).ready(function () {
         } else if (direction === 'east' && redLightE) {
             return pos.left <= stopLinePositions.east + 30 && pos.left > stopLinePositions.east;
         } else if (direction === 'west' && redLightW) {
-            return pos.left >= stopLinePositions.west - 30 && pos.left < stopLinePositions.west;
+            // Điều chỉnh khoảng cách kiểm tra để xe dừng trước vạch dừng
+            return pos.left >= stopLinePositions.west - 60 && pos.left < stopLinePositions.west - 15;
         }
 
         return false;
@@ -373,20 +409,27 @@ $(document).ready(function () {
                     return;
                 }
 
+                // Kiểm tra nếu xe đã vượt qua đèn đỏ (đã vượt qua vạch dừng)
+                const hasCrossedStopLine = hasCrossedRedLight(vehicle, direction);
+
                 // Kiểm tra có đèn đỏ và xe đang đến gần vạch dừng không
-                const shouldStop = shouldStopAtRedLight(vehicle, direction);
+                // Chỉ kiểm tra khi xe chưa vượt qua vạch dừng
+                const shouldStop = !hasCrossedStopLine && shouldStopAtRedLight(vehicle, direction);
 
                 // Kiểm tra va chạm với xe khác
                 const willCollide = checkCollision(vehicle, direction);
 
                 let canMove = true;
 
-                // Dựa vào đèn tín hiệu
-                if (direction === 'north' || direction === 'south') {
-                    canMove = northSouthCanMove;
-                } else {
-                    canMove = eastWestCanMove;
+                // Nếu xe chưa vượt qua vạch dừng, kiểm tra đèn tín hiệu
+                if (!hasCrossedStopLine) {
+                    if ((direction === 'north' || direction === 'south') && !northSouthCanMove) {
+                        canMove = false;
+                    } else if ((direction === 'east' || direction === 'west') && !eastWestCanMove) {
+                        canMove = false;
+                    }
                 }
+                // Nếu xe đã vượt qua vạch dừng, luôn cho phép di chuyển
 
                 // Điều chỉnh tốc độ dựa trên hoàn cảnh
                 if (shouldStop || willCollide) {
@@ -430,6 +473,27 @@ $(document).ready(function () {
 
         // Tiếp tục vòng lặp animation
         animationFrameId = requestAnimationFrame(animateVehicles);
+    }
+
+    // Hàm mới để kiểm tra xe đã vượt qua vạch dừng đèn đỏ chưa
+    function hasCrossedRedLight(vehicle, direction) {
+        const pos = {
+            top: parseFloat(vehicle.element.css('top')),
+            left: parseFloat(vehicle.element.css('left'))
+        };
+
+        // Kiểm tra dựa vào hướng di chuyển
+        if (direction === 'north') {
+            return pos.top > stopLinePositions.north;
+        } else if (direction === 'south') {
+            return pos.top < stopLinePositions.south;
+        } else if (direction === 'east') {
+            return pos.left < stopLinePositions.east;
+        } else if (direction === 'west') {
+            return pos.left > stopLinePositions.west;
+        }
+
+        return false;
     }
 
     // PHẦN 5: ĐIỀU KHIỂN ĐÈN TÍN HIỆU
@@ -1045,6 +1109,29 @@ $(document).ready(function () {
             vehicles.east.length + vehicles.west.length;
         $('#vehicle-count').text(totalVehicles);
 
+        // Đếm số xe bị phạt nguội
+        let finedVehicles = 0;
+        Object.keys(vehicles).forEach(direction => {
+            vehicles[direction].forEach(vehicle => {
+                if (vehicle.fined) {
+                    finedVehicles++;
+                }
+            });
+        });
+
+        // Hiển thị số xe bị phạt nguội (nếu đã có element)
+        if ($('#fined-count').length) {
+            $('#fined-count').text(finedVehicles);
+        } else {
+            // Thêm thông tin phạt nguội vào bảng thống kê
+            $('#statistics-container .card-body').append(`
+                <div class="row mt-2">
+                    <div class="col-7">Xe bị phạt nguội:</div>
+                    <div class="col-5 text-end"><span id="fined-count">${finedVehicles}</span></div>
+                </div>
+            `);
+        }
+
         // Cập nhật thời gian mô phỏng
         const minutes = Math.floor(simulationTimeSeconds / 60);
         const seconds = simulationTimeSeconds % 60;
@@ -1112,4 +1199,30 @@ $(document).ready(function () {
         $('body').append(notification);
         setTimeout(() => notification.fadeOut('slow', function () { $(this).remove(); }), 3000);
     });
+
+    // Thêm CSS cho xe bị phạt nguội vào phần đầu tài liệu hoặc file CSS riêng
+    $('<style>')
+        .prop('type', 'text/css')
+        .html(`
+            .fined-vehicle {
+                background-color: rgba(255, 0, 0, 0.6) !important;
+                border: 2px solid #ff0000 !important;
+                box-shadow: 0 0 10px #ff0000 !important;
+            }
+            .fine-notification {
+                font-size: 14px;
+                padding: 5px 10px;
+                border-radius: 5px;
+                white-space: nowrap;
+                transform: translate(-50%, -100%);
+                animation: fadeInOut 2s ease-in-out;
+            }
+            @keyframes fadeInOut {
+                0% { opacity: 0; transform: translate(-50%, -80%); }
+                20% { opacity: 1; transform: translate(-50%, -100%); }
+                80% { opacity: 1; transform: translate(-50%, -100%); }
+                100% { opacity: 0; transform: translate(-50%, -120%); }
+            }
+        `)
+        .appendTo('head');
 });
