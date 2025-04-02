@@ -60,6 +60,20 @@ $(document).ready(function () {
         return vehicleSpeed * 0.8;
     }
 
+    // Thêm style cho xe được click để tiếp tục di chuyển
+    $('<style>')
+        .prop('type', 'text/css')
+        .html(`
+            .clicked-vehicle {
+                box-shadow: 0 0 10px 2px #4caf50 !important;
+                border: 2px solid #4caf50 !important;
+                z-index: 100 !important;
+                transform: scale(1.05);
+                transition: all 0.3s ease;
+            }
+        `)
+        .appendTo('head');
+
     // PHẦN 2: TẠO MÔI TRƯỜNG GIAO THÔNG
     // Tạo vạch kẻ đường đứt đoạn
     function createRoadMarkings() {
@@ -162,16 +176,47 @@ $(document).ready(function () {
             }
         });
 
+        // Thêm sự kiện click để cho phép xe tiếp tục di chuyển
+        newVehicle.on('click', function (e) {
+            // Ngăn chặn sự kiện lan tỏa để không kích hoạt sự kiện double-click
+            e.stopPropagation();
+
+            const vehicleIndex = vehicles[direction].findIndex(v => v.id === id);
+            if (vehicleIndex !== -1) {
+                // Đánh dấu xe này đã được click
+                const wasClicked = vehicles[direction][vehicleIndex].clicked || false;
+                vehicles[direction][vehicleIndex].clicked = !wasClicked;
+
+                // Thay đổi hiển thị để người dùng biết xe đã được click
+                if (!wasClicked) {
+                    $(this).addClass('clicked-vehicle');
+                    // Hiển thị thông báo nhỏ
+                    const notification = $(`<div class="alert alert-success click-notification" 
+                        style="position: absolute; top: ${$(this).css('top')}; left: ${$(this).css('left')}; z-index: 1001; font-size: 12px;">
+                        Xe sẽ tiếp tục di chuyển!</div>`);
+
+                    $('body').append(notification);
+                    setTimeout(() => notification.fadeOut('slow', function () { $(this).remove(); }), 1500);
+                } else {
+                    $(this).removeClass('clicked-vehicle');
+                }
+
+                console.log(`Xe ${id} ${!wasClicked ? 'sẽ' : 'sẽ không'} tiếp tục di chuyển khi gặp đèn đỏ`);
+            }
+        });
+
         // Thêm vào mảng xe
         vehicles[direction].push({
             id: id,
             element: newVehicle,
             position: { ...initialPositions[direction] },
             speed: 0,
+
             maxSpeed: getMaxSpeed() * (0.7 + Math.random() * 0.6), // Tốc độ ngẫu nhiên cho mỗi xe
             lastUpdate: performance.now(),
             stopped: false,
-            fined: false  // Thêm trạng thái phạt nguội
+            fined: false,  // Thêm trạng thái phạt nguội
+            clicked: false // Thêm trạng thái đã click để tiếp tục di chuyển
         });
 
         return vehicles[direction][vehicles[direction].length - 1];
@@ -362,8 +407,9 @@ $(document).ready(function () {
         } else if (direction === 'east' && redLightE) {
             return pos.left <= stopLinePositions.east + 30 && pos.left > stopLinePositions.east;
         } else if (direction === 'west' && redLightW) {
+
             // Điều chỉnh khoảng cách kiểm tra để xe dừng trước vạch dừng
-            return pos.left >= stopLinePositions.west - 60 && pos.left < stopLinePositions.west - 15;
+            return pos.left >= stopLinePositions.west - 100 && pos.left < stopLinePositions.west - 10;
         }
 
         return false;
@@ -413,23 +459,23 @@ $(document).ready(function () {
                 const hasCrossedStopLine = hasCrossedRedLight(vehicle, direction);
 
                 // Kiểm tra có đèn đỏ và xe đang đến gần vạch dừng không
-                // Chỉ kiểm tra khi xe chưa vượt qua vạch dừng
-                const shouldStop = !hasCrossedStopLine && shouldStopAtRedLight(vehicle, direction);
+                // Chỉ kiểm tra khi xe chưa vượt qua vạch dừng và chưa được click
+                const shouldStop = !hasCrossedStopLine && !vehicle.clicked && shouldStopAtRedLight(vehicle, direction);
 
                 // Kiểm tra va chạm với xe khác
                 const willCollide = checkCollision(vehicle, direction);
 
                 let canMove = true;
 
-                // Nếu xe chưa vượt qua vạch dừng, kiểm tra đèn tín hiệu
-                if (!hasCrossedStopLine) {
+                // Nếu xe chưa vượt qua vạch dừng và chưa được click, kiểm tra đèn tín hiệu
+                if (!hasCrossedStopLine && !vehicle.clicked) {
                     if ((direction === 'north' || direction === 'south') && !northSouthCanMove) {
                         canMove = false;
                     } else if ((direction === 'east' || direction === 'west') && !eastWestCanMove) {
                         canMove = false;
                     }
                 }
-                // Nếu xe đã vượt qua vạch dừng, luôn cho phép di chuyển
+                // Nếu xe đã vượt qua vạch dừng hoặc đã được click, luôn cho phép di chuyển
 
                 // Điều chỉnh tốc độ dựa trên hoàn cảnh
                 if (shouldStop || willCollide) {
@@ -443,6 +489,12 @@ $(document).ready(function () {
                     // Tăng tốc trong điều kiện bình thường
                     vehicle.speed = Math.min(vehicle.maxSpeed, vehicle.speed + 0.2);
                     vehicle.stopped = false;
+                }
+
+                // Tăng tốc độ nếu xe đã được click
+                if (vehicle.clicked && !willCollide) {
+                    // Thêm hệ số 1.5 cho tốc độ khi xe được click
+                    vehicle.speed = Math.min(vehicle.maxSpeed * 1.5, vehicle.speed * 1.3);
                 }
 
                 // Áp dụng tốc độ theo hướng di chuyển
@@ -505,7 +557,7 @@ $(document).ready(function () {
 
         if (color) {
             $(`#${direction}-${color}`).addClass('active');
-            console.log(`Đã kích hoạt đèn ${color} cho hướng ${direction}`);
+            // console.log(`Đã kích hoạt đèn ${color} cho hướng ${direction}`);
         }
     }
 
@@ -710,7 +762,7 @@ $(document).ready(function () {
                 if (currentTimer > 0) {
                     currentTimer--;
                     updateCountdowns(currentTimer);
-                    console.log("Đếm ngược: " + currentTimer);
+                    // console.log("Đếm ngược: " + currentTimer);
                 } else {
                     // Kết thúc thời gian hiện tại, chuyển sang trạng thái tiếp theo
                     if (currentPhase === 0) {
@@ -1200,29 +1252,4 @@ $(document).ready(function () {
         setTimeout(() => notification.fadeOut('slow', function () { $(this).remove(); }), 3000);
     });
 
-    // Thêm CSS cho xe bị phạt nguội vào phần đầu tài liệu hoặc file CSS riêng
-    $('<style>')
-        .prop('type', 'text/css')
-        .html(`
-            .fined-vehicle {
-                background-color: rgba(255, 0, 0, 0.6) !important;
-                border: 2px solid #ff0000 !important;
-                box-shadow: 0 0 10px #ff0000 !important;
-            }
-            .fine-notification {
-                font-size: 14px;
-                padding: 5px 10px;
-                border-radius: 5px;
-                white-space: nowrap;
-                transform: translate(-50%, -100%);
-                animation: fadeInOut 2s ease-in-out;
-            }
-            @keyframes fadeInOut {
-                0% { opacity: 0; transform: translate(-50%, -80%); }
-                20% { opacity: 1; transform: translate(-50%, -100%); }
-                80% { opacity: 1; transform: translate(-50%, -100%); }
-                100% { opacity: 0; transform: translate(-50%, -120%); }
-            }
-        `)
-        .appendTo('head');
 });

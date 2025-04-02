@@ -500,3 +500,23 @@ body {
     transform: translateY(1px);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
+.fined-vehicle {
+    background-color: rgba(255, 0, 0, 0.6) !important;
+    border: 2px solid #ff0000 !important;
+    box-shadow: 0 0 10px #ff0000 !important;
+}
+.fine-notification {
+    font-size: 14px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    white-space: nowrap;
+    transform: translate(-50%, -100%);
+    animation: fadeInOut 2s ease-in-out;
+}
+@keyframes fadeInOut {
+    0% { opacity: 0; transform: translate(-50%, -80%); }
+    20% { opacity: 1; transform: translate(-50%, -100%); }
+    80% { opacity: 1; transform: translate(-50%, -100%); }
+    100% { opacity: 0; transform: translate(-50%, -120%); }
+}
